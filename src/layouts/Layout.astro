@@ -1,0 +1,39 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Personal Portfolio and Resume' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/Portfolio/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/Portfolio/" class="nav-logo">Portfolio</a>
+        <ul class="nav-menu">
+          <li><a href="/Portfolio/">Home</a></li>
+          <li><a href="/Portfolio/resume">Resume</a></li>
+          <li><a href="/Portfolio/about">About</a></li>
+        </ul>
+      </div>
+    </nav>
+    <main>
+      <slot />
+    </main>
+    <footer>
+      <p>&copy; {new Date().getFullYear()} Personal Portfolio. Built with Astro.</p>
+    </footer>
+  </body>
+</html>
