@@ -83,16 +83,16 @@
     color: #2563eb;
   }
 
-  :global(.particle) {
-    fill: rgba(255, 255, 255, 0.8);
+  :global(#globe-network .particle) {
+    fill-opacity: 0.8;
   }
 
-  :global(.connection) {
+  :global(#globe-network .connection) {
     stroke: rgba(100, 150, 255, 0.3);
     stroke-width: 1;
   }
 
-  :global(.connection.active) {
+  :global(#globe-network .connection.active) {
     stroke: rgba(100, 150, 255, 0.8);
     stroke-width: 2;
   }
@@ -131,15 +131,26 @@
     distance: number;
   }
 
+  let animationFrameId: number | null = null;
+
   function initGlobeVisualization() {
     const container = document.getElementById('globe-network');
     if (!container) return;
+
+    // Cancel any existing animation loop
+    if (animationFrameId !== null) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
 
     // Clear any existing SVG
     d3.select(container).selectAll('svg').remove();
 
     const width = container.clientWidth;
     const height = container.clientHeight;
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // Create SVG
     const svg = d3.select(container)
@@ -248,40 +259,47 @@
       .attr('fill', (d: Particle) => categoryColors[d.category])
       .style('filter', 'drop-shadow(0 0 3px rgba(255, 255, 255, 0.5))');
 
-    // Animation loop
+    // Animation loop (only if motion is not reduced)
     function animate() {
-      // Update particle positions with smooth floating motion
-      particles.forEach((p: Particle) => {
-        p.x += p.vx;
-        p.y += p.vy;
+      if (!prefersReducedMotion) {
+        // Update particle positions with smooth floating motion
+        particles.forEach((p: Particle) => {
+          p.x += p.vx;
+          p.y += p.vy;
 
-        // Bounce off edges with some padding
-        const padding = 50;
-        if (p.x < padding || p.x > width - padding) p.vx *= -1;
-        if (p.y < padding || p.y > height - padding) p.vy *= -1;
+          // Bounce off edges with some padding
+          const padding = 50;
+          if (p.x < padding || p.x > width - padding) p.vx *= -1;
+          if (p.y < padding || p.y > height - padding) p.vy *= -1;
 
-        // Add slight random drift
-        p.vx += (Math.random() - 0.5) * 0.02;
-        p.vy += (Math.random() - 0.5) * 0.02;
+          // Add slight random drift
+          p.vx += (Math.random() - 0.5) * 0.02;
+          p.vy += (Math.random() - 0.5) * 0.02;
 
-        // Limit velocity
-        const maxVel = 0.5;
-        p.vx = Math.max(-maxVel, Math.min(maxVel, p.vx));
-        p.vy = Math.max(-maxVel, Math.min(maxVel, p.vy));
-      });
+          // Limit velocity
+          const maxVel = 0.5;
+          p.vx = Math.max(-maxVel, Math.min(maxVel, p.vx));
+          p.vy = Math.max(-maxVel, Math.min(maxVel, p.vy));
+        });
 
-      // Update visual positions
-      particleElements
-        .attr('cx', (d: Particle) => d.x)
-        .attr('cy', (d: Particle) => d.y);
+        // Update visual positions
+        particleElements
+          .attr('cx', (d: Particle) => d.x)
+          .attr('cy', (d: Particle) => d.y);
 
-      updateConnections();
+        updateConnections();
+      }
 
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
     }
 
-    // Start animation
-    animate();
+    // Initial render of connections
+    updateConnections();
+
+    // Start animation (static frame if reduced motion)
+    if (!prefersReducedMotion) {
+      animate();
+    }
 
     // Add interaction - highlight connections on hover
     particleElements.on('mouseenter', function(_event: MouseEvent, d: Particle) {
