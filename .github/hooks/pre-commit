@@ -1,0 +1,95 @@
+#!/bin/bash
+# Pre-commit hook to update documentation when relevant changes are detected
+# This hook integrates with GitHub Copilot agent skills
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${YELLOW}🤖 Checking for documentation updates...${NC}"
+
+# Check if there are any staged changes
+if ! git diff --cached --quiet; then
+    # Get list of staged files (safely handling filenames with spaces)
+    STAGED_FILES=()
+    while IFS= read -r -d '' file; do
+        STAGED_FILES+=("$file")
+    done < <(git diff --cached --name-only -z)
+    
+    # Define patterns for files that might require documentation updates
+    # Check for changes in source files, config files, or package.json
+    RELEVANT_PATTERNS=(
+        "src/"
+        "package.json"
+        "astro.config"
+        ".github/workflows"
+        "public/"
+    )
+    
+    RELEVANT_CHANGES=false
+    
+    # Check if any staged files match relevant patterns
+    for file in "${STAGED_FILES[@]}"; do
+        for pattern in "${RELEVANT_PATTERNS[@]}"; do
+            if [[ $file == *"$pattern"* ]]; then
+                RELEVANT_CHANGES=true
+                break 2
+            fi
+        done
+    done
+    
+    # Check if README.md is already being updated
+    README_STAGED=false
+    for file in "${STAGED_FILES[@]}"; do
+        if [ "$file" = "README.md" ]; then
+            README_STAGED=true
+            break
+        fi
+    done
+    
+    # If relevant changes detected and README is not already staged
+    if [ "$RELEVANT_CHANGES" = true ] && [ "$README_STAGED" = false ]; then
+        echo -e "${YELLOW}📝 Relevant changes detected. Documentation may need updating.${NC}"
+        echo ""
+        echo -e "${GREEN}Agent Skill: update-docs${NC}"
+        echo "The documentation update agent skill can review your changes and update README.md if necessary."
+        echo ""
+        echo "Changed files that may require documentation updates:"
+        for file in "${STAGED_FILES[@]}"; do
+            for pattern in "${RELEVANT_PATTERNS[@]}"; do
+                if [[ $file == *"$pattern"* ]]; then
+                    echo "  - $file"
+                    break
+                fi
+            done
+        done
+        echo ""
+        echo -e "${YELLOW}💡 Tip: GitHub Copilot can use the update-docs agent skill to automatically"
+        echo -e "   update your documentation based on these changes.${NC}"
+        echo ""
+        echo "To use the agent skill:"
+        echo "  1. Review .github/agents/update-docs.md for the agent's instructions"
+        echo "  2. Ask GitHub Copilot to update documentation based on your changes"
+        echo "  3. The agent will analyze changes and update README.md accordingly"
+        echo ""
+        
+        # Optional: Uncomment to require manual confirmation
+        # read -p "Continue with commit? (y/n) " -n 1 -r
+        # echo
+        # if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        #     echo -e "${RED}Commit cancelled.${NC}"
+        #     exit 1
+        # fi
+    elif [ "$README_STAGED" = true ]; then
+        echo -e "${GREEN}✓ README.md is being updated with this commit${NC}"
+    else
+        echo -e "${GREEN}✓ No documentation updates needed${NC}"
+    fi
+else
+    echo -e "${GREEN}✓ No staged changes${NC}"
+fi
+
+# Allow commit to proceed
+exit 0

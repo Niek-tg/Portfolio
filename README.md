@@ -10,6 +10,7 @@ A personal portfolio website built with [Astro](https://astro.build) to showcase
 - About page
 - Fast and optimized with Astro
 - Automated deployment to GitHub Pages
+- GitHub Copilot agent skill for automatic documentation updates
 
 ## 🛠️ Tech Stack
 
@@ -37,12 +38,24 @@ cd Portfolio
 npm install
 ```
 
-3. Start the development server:
+3. (Optional) Set up git hooks for automatic documentation updates:
+```bash
+./setup-hooks.sh
+```
+
+4. Start the development server:
 ```bash
 npm run dev
 ```
 
-4. Open your browser and visit `http://localhost:4321`
+5. Open your browser and visit `http://localhost:4321`
+
+### Available Scripts
+
+- `npm run dev` / `npm start` - Start the development server
+- `npm run build` - Build the site for production (includes type checking)
+- `npm run preview` - Preview the production build locally
+- `npm run check` - Run Astro's type checking without building
 
 ## 🏗️ Building for Production
 
@@ -79,6 +92,37 @@ To enable GitHub Pages for your repository:
 - Edit `src/pages/about.astro` for the about page
 - Modify `src/styles/global.css` to customize the styling
 - Update `astro.config.mjs` to change site configuration
+
+## 🤖 Agent Skills
+
+This repository includes a GitHub Copilot agent skill for documentation maintenance.
+
+### Documentation Update Agent
+
+The `update-docs` agent skill helps keep the README.md file up-to-date with code changes.
+
+**Setup:**
+1. Run `./setup-hooks.sh` to install the pre-commit hook
+2. The hook will run before each commit and check for changes that may require documentation updates
+
+**How it works:**
+- Before each commit, the pre-commit hook analyzes staged changes
+- If relevant changes are detected (new features, dependencies, config changes, etc.), you'll be reminded to review documentation
+- You can use GitHub Copilot with the agent skill instructions in `.github/agents/update-docs.md` to help update the README
+- Or update the README manually following the agent skill guidelines
+
+**Agent skill configuration:**
+- Located in `.github/agents/update-docs.md`
+- Defines rules for when and how to update documentation
+- Provides guidance for GitHub Copilot or manual documentation updates
+
+**Relevant changes include:**
+- New pages, components, or features
+- New dependencies or technologies
+- Changes to build/deployment processes
+- New configuration requirements
+
+The agent skill provides a reminder workflow to help keep documentation current, reducing the likelihood of outdated documentation.
 
 ## 📄 License
 
