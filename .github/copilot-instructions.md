@@ -2,6 +2,8 @@
 
 This file provides general instructions and guardrails for GitHub Copilot when working on this repository.
 
+This is an Astro-based portfolio website built with TypeScript. The project emphasizes code readability and maintainability.
+
 ## Core Principle
 
 **Write readable code over fast code.**
@@ -10,6 +12,26 @@ This file provides general instructions and guardrails for GitHub Copilot when w
 - Choose clarity over cleverness
 - Optimize only when necessary and after profiling shows a real performance issue
 - Readable code reduces bugs and makes future changes easier
+
+## Development Workflow
+
+### Build, Test, and Lint Commands
+
+- **Install dependencies**: `npm ci` or `npm install`
+- **Development server**: `npm run dev` (runs on `http://localhost:4321`)
+- **Build for production**: `npm run build` (includes type checking via `astro check`)
+- **Type check only**: `npm run check`
+- **Preview production build**: `npm run preview`
+- **Run tests**: `npm test`
+- **Run tests in watch mode**: `npm test -- --watch`
+- **Run tests with UI**: `npm run test:ui`
+- **Run tests with coverage**: `npm run test:coverage`
+
+### Before Committing
+
+1. Ensure all tests pass: `npm test`
+2. Verify the build succeeds: `npm run build`
+3. Check TypeScript types: `npm run check`
 
 ## Language-Specific Instructions
 
@@ -79,3 +101,12 @@ This repository uses GitHub Copilot Skills for specialized guidance:
 - **testing** (`.github/skills/testing/SKILL.md`) - Provides testing guidelines and best practices for Vitest
 
 GitHub Copilot automatically uses these skills when relevant. Run `./setup-hooks.sh` to enable the pre-commit hook that integrates with the update-docs skill.
+
+## 📝 Path-Specific Instructions
+
+This repository includes path-specific instructions in `.github/instructions/` for different file types:
+
+- **test-files.instructions.md** - Guidelines for writing test files (`**/*.test.ts`)
+- **astro-components.instructions.md** - Best practices for Astro components (`**/*.astro`)
+
+These instructions are automatically applied by GitHub Copilot when working on matching file types.
