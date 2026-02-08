@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDate, getCurrentYear, isValidEmail, truncateText } from '../helpers';
+import { formatDate, getCurrentYear, isValidEmail, truncateText } from './helpers';
 
 describe('formatDate', () => {
   it('should format a date correctly', () => {

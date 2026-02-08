@@ -26,14 +26,14 @@ npm run test:coverage
 
 ## Writing Tests
 
-Tests are located in `__tests__` directories next to the code they test. For example:
+Tests are co-located with the source code in the same directory. For example:
 - Source: `src/utils/helpers.ts`
-- Tests: `src/utils/__tests__/helpers.test.ts`
+- Tests: `src/utils/helpers.test.ts`
 
 Example test structure:
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { myFunction } from '../myModule';
+import { myFunction } from './myModule';
 
 describe('myFunction', () => {
   it('should do something', () => {
