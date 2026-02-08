@@ -1,0 +1,30 @@
+[tools]
+node = "24.13.0"
+
+[env]
+# Disable Astro telemetry for consistent builds
+_.env.ASTRO_TELEMETRY_DISABLED = "1"
+
+[tasks.dev]
+description = "Start development server"
+run = "npm run dev"
+
+[tasks.build]
+description = "Build for production"
+run = "npm run build"
+
+[tasks.test]
+description = "Run tests"
+run = "npm test"
+
+[tasks.preview]
+description = "Preview production build"
+run = "npm run preview"
+
+[tasks.check]
+description = "Type check without building"
+run = "npm run check"
+
+[tasks.install]
+description = "Install dependencies"
+run = "npm ci"
