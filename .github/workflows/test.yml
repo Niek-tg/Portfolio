@@ -27,14 +27,16 @@ jobs:
         run: npm ci
       
       - name: Run tests
+        if: github.ref != 'refs/heads/main' || github.event_name != 'push'
         run: npm test -- --run
       
       - name: Run tests with coverage
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: npm run test:coverage -- --run
       
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
-        if: always()
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         with:
           name: coverage-report
           path: coverage/

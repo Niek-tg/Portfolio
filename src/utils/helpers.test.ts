@@ -3,7 +3,7 @@ import { formatDate, getCurrentYear, isValidEmail, truncateText } from './helper
 
 describe('formatDate', () => {
   it('should format a date correctly', () => {
-    const date = new Date('2024-01-15');
+    const date = new Date(2024, 0, 15);
     const formatted = formatDate(date);
     expect(formatted).toMatch(/January 15, 2024/);
   });
