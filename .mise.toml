@@ -17,6 +17,14 @@ run = "npm run build"
 description = "Run tests"
 run = "npm test"
 
+[tasks."test:ui"]
+description = "Run tests with UI"
+run = "npm run test:ui"
+
+[tasks."test:coverage"]
+description = "Run tests with coverage"
+run = "npm run test:coverage"
+
 [tasks.preview]
 description = "Preview production build"
 run = "npm run preview"
