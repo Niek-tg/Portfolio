@@ -10,7 +10,7 @@ A personal portfolio website built with [Astro](https://astro.build) to showcase
 - About page
 - Fast and optimized with Astro
 - Automated deployment to GitHub Pages
-- GitHub Copilot agent skill for automatic documentation updates
+- GitHub Copilot skills for development workflow enhancement
 
 ## 🛠️ Tech Stack
 
@@ -93,36 +93,40 @@ To enable GitHub Pages for your repository:
 - Modify `src/styles/global.css` to customize the styling
 - Update `astro.config.mjs` to change site configuration
 
-## 🤖 Agent Skills
+## 🤖 Skills
 
-This repository includes a GitHub Copilot agent skill for documentation maintenance.
+This repository uses GitHub Copilot Skills for enhanced development workflows.
 
-### Documentation Update Agent
+### Available Skills
 
-The `update-docs` agent skill helps keep the README.md file up-to-date with code changes.
+Skills are located in `.github/skills/` following the [Agent Skills standard](https://github.com/agentskills/agentskills).
 
-**Setup:**
+**update-docs** - Keeps README.md synchronized with code changes
+- Integrates with pre-commit hook to remind you when documentation might need updates
+- Guides what sections to update based on code changes
+- Run `./setup-hooks.sh` to enable the pre-commit hook
+
+**testing** - Guidelines for writing and maintaining tests
+- Provides Vitest testing best practices
+- Includes examples and patterns for well-structured tests
+- Explains the project's testing conventions
+
+### Using Skills
+
+GitHub Copilot automatically uses skills when relevant to your task. You can also explicitly reference them:
+
+```
+Use the update-docs skill to update the README
+Use the testing skill to help write tests for this function
+```
+
+### How It Works
+
 1. Run `./setup-hooks.sh` to install the pre-commit hook
-2. The hook will run before each commit and check for changes that may require documentation updates
-
-**How it works:**
-- Before each commit, the pre-commit hook analyzes staged changes
-- If relevant changes are detected (new features, dependencies, config changes, etc.), you'll be reminded to review documentation
-- You can use GitHub Copilot with the agent skill instructions in `.github/agents/update-docs.md` to help update the README
-- Or update the README manually following the agent skill guidelines
-
-**Agent skill configuration:**
-- Located in `.github/agents/update-docs.md`
-- Defines rules for when and how to update documentation
-- Provides guidance for GitHub Copilot or manual documentation updates
-
-**Relevant changes include:**
-- New pages, components, or features
-- New dependencies or technologies
-- Changes to build/deployment processes
-- New configuration requirements
-
-The agent skill provides a reminder workflow to help keep documentation current, reducing the likelihood of outdated documentation.
+2. Make code changes and stage them with `git add`
+3. When you commit, the hook checks for changes that might need documentation updates
+4. If relevant changes are detected, you'll see a reminder
+5. Ask GitHub Copilot to use the appropriate skill, or update manually following the skill's guidelines
 
 ## 📄 License
 

@@ -1,26 +1,24 @@
 # TypeScript Coding Instructions
 
-This file provides TypeScript-specific coding instructions for GitHub Copilot when working on this repository.
+This file provides TypeScript-specific coding instructions for GitHub Copilot.
 
 ## Core Principle
 
 **Write readable code over fast code.**
 
-## TypeScript Guidelines
-
-### Type Definitions
+## Type Definitions
 
 - **Avoid `any`**: Always use explicit types
   - Good: `function processData(input: string): ProcessedData`
   - Bad: `function processData(input: any): any`
 
 - **Use union types for optional/nullable values**:
-  - Good: `user: User | null | undefined`
+  - Good: `user: User | null`
   - Bad: `user: User` (then checking `if (!user)`)
 
-- **Prefer readable type definitions over complex generics**:
+- **Prefer readable type definitions**:
   - Break complex types into smaller, named pieces
-  - Use type aliases to give descriptive names to types
+  - Use type aliases for descriptive names
 
 - **Define interfaces for object shapes**:
   ```typescript
@@ -31,27 +29,19 @@ This file provides TypeScript-specific coding instructions for GitHub Copilot wh
   }
   ```
 
-- **Use type aliases for complex types**:
-  ```typescript
-  type ProcessedUser = Omit<User, 'password'> & { isActive: boolean };
-  ```
+## Naming Conventions
 
-### Naming Conventions
-
-- **Use descriptive variable and function names**:
+- **Use descriptive names**:
   - Good: `userEmailAddress`, `calculateTotalPrice`, `isValidInput`
   - Bad: `e`, `calc`, `x`, `data`
 
-- **Boolean variables should be prefixed with is/has/can**:
+- **Boolean variables start with is/has/can**:
   - Good: `isValid`, `hasPermission`, `canEdit`
   - Bad: `valid`, `permission`, `edit`
 
-### Functions
+## Functions
 
-- **Keep functions small and focused** (5-20 lines ideal)
-  - Each function should do one thing well
-  - If using "and" in the function name, it probably does too much
-
+- **Keep functions small** (5-20 lines ideal) - each function does one thing
 - **Use explicit return types**:
   ```typescript
   export function formatDate(date: Date): string {
@@ -59,197 +49,79 @@ This file provides TypeScript-specific coding instructions for GitHub Copilot wh
   }
   ```
 
-- **Add JSDoc comments for all exported functions**:
+- **Add JSDoc comments for exported functions**:
   ```typescript
   /**
    * Calculate the total price including tax
    */
   export function calculateTotalWithTax(subtotal: number, taxRate: number): number {
-    const tax = subtotal * taxRate;
-    const total = subtotal + tax;
-    return total;
+    return subtotal + (subtotal * taxRate);
   }
   ```
 
-### Control Flow
+## Control Flow
 
 - **Use early returns to reduce nesting**:
   ```typescript
-  // Good
   export function processUser(user: User | null): ProcessedUser | null {
-    if (!user) {
-      return null;
-    }
-
-    if (!user.email) {
-      throw new Error('User email is required');
-    }
-
+    if (!user) return null;
+    if (!user.email) throw new Error('User email is required');
+    
     return {
       id: user.id,
       email: user.email.toLowerCase(),
       name: user.name.trim(),
     };
   }
-
-  // Bad
-  export function processUser(user: User | null) {
-    if (user) {
-      if (user.email) {
-        return {
-          id: user.id,
-          email: user.email.toLowerCase(),
-          name: user.name.trim(),
-        };
-      } else {
-        throw new Error('User email is required');
-      }
-    } else {
-      return null;
-    }
-  }
   ```
 
-- **Prefer explicit over implicit**:
-  - Use explicit return statements
-  - Avoid complex ternary operators (break into if/else if clearer)
-  - Write out conditions rather than using shortcuts
-
 - **Maximum nesting depth: 3 levels**
+- **Prefer explicit over implicit** - use explicit returns and clear conditions
+- **Prefer declarative code**: `items.filter(item => item.isActive).map(item => item.name)`
 
-- **Prefer declarative over imperative**:
-  - Good: `items.filter(item => item.isActive).map(item => item.name)`
-  - Avoid: Complex loops with multiple mutations
+## Error Handling
 
-### Error Handling
-
-- **Be explicit about errors**:
-  - Validate inputs explicitly
-  - Throw descriptive errors with helpful messages
-  - Use Error classes for different error types
-
+- **Be explicit about errors** - validate inputs and throw descriptive errors:
   ```typescript
   export function divideNumbers(a: number, b: number): number {
-    if (b === 0) {
-      throw new Error('Cannot divide by zero');
-    }
+    if (b === 0) throw new Error('Cannot divide by zero');
     return a / b;
   }
   ```
 
-### Code Organization
+## Code Organization
 
 - **Organize imports logically**:
-  1. External dependencies (npm packages)
+  1. External dependencies
   2. Internal absolute imports
   3. Relative imports
   - Add blank lines between groups
 
-  ```typescript
-  // External
-  import { describe, it, expect } from 'vitest';
+- **Co-locate tests with source files**: `src/utils/helpers.ts` and `src/utils/helpers.test.ts`
 
-  // Relative
-  import { formatDate, getCurrentYear } from './helpers';
-  ```
+## Testing
 
-- **Co-locate test files with source files**:
-  - Source: `src/utils/helpers.ts`
-  - Tests: `src/utils/helpers.test.ts`
-  - No separate `__tests__` directories
-
-### Testing
-
-- **Write readable tests**:
-  - Use descriptive test names
-  - Follow Arrange-Act-Assert pattern
-  - One logical assertion per test
-  - Use `describe` blocks to group related tests
-
+- **Write readable tests** with descriptive names using the Arrange-Act-Assert pattern:
   ```typescript
   describe('formatDate', () => {
     it('should format a date correctly', () => {
       // Arrange
       const date = new Date(2024, 0, 15);
-
+      
       // Act
       const formatted = formatDate(date);
-
+      
       // Assert
-      expect(formatted).toMatch(/January 15, 2024/);
+      expect(formatted).toMatch(/2024-01-15/);
     });
   });
   ```
 
-## Examples
-
-### Good: Readable Function
-
-```typescript
-/**
- * Calculate the total price including tax
- */
-export function calculateTotalWithTax(subtotal: number, taxRate: number): number {
-  const tax = subtotal * taxRate;
-  const total = subtotal + tax;
-  return total;
-}
-```
-
-### Bad: Less Readable
-
-```typescript
-// Less clear, harder to understand at a glance
-export const calc = (s: number, t: number) => s + s * t;
-```
-
-### Good: Type-Safe Nullable Handling
-
-```typescript
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
-
-interface ProcessedUser {
-  id: string;
-  email: string;
-  name: string;
-}
-
-export function processUser(user: User | null): ProcessedUser | null {
-  if (!user) {
-    return null;
-  }
-
-  if (!user.email) {
-    throw new Error('User email is required');
-  }
-
-  return {
-    id: user.id,
-    email: user.email.toLowerCase(),
-    name: user.name.trim(),
-  };
-}
-```
-
-### Bad: Type Mismatch
-
-```typescript
-// TypeScript type doesn't match the runtime check
-export function processUser(user: User): ProcessedUser | null {
-  if (!user) {  // Type error with strictNullChecks
-    return null;
-  }
-  // ...
-}
-```
+For detailed testing guidelines, see the **testing skill** at `.github/skills/testing/SKILL.md`.
 
 ## Remember
 
 - **Readable code is maintainable code**
 - **TypeScript's type system is your friend - use it**
-- **If you need to add a comment to explain it, consider rewriting it more clearly**
+- **If you need a comment to explain it, consider rewriting it more clearly**
 - **When in doubt, choose the more explicit, readable option**
