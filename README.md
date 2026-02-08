@@ -103,8 +103,9 @@ The repository is configured with [Context7 MCP server](https://github.com/upsta
 
 **Setup:**
 
-1. Get your API key from [Context7](https://context7.com)
+1. Get your API key from [context7.com](https://context7.com) (see [GitHub docs](https://github.com/upstash/context7) for more info)
 2. Replace `YOUR_API_KEY` in `.cursor/mcp.json` with your actual API key
+   - **Never commit your actual API key to version control**
 3. Restart Cursor IDE to load the MCP server configuration
 
 **Usage:**
