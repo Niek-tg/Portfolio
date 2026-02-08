@@ -1,6 +1,6 @@
 #!/bin/bash
-# Pre-commit hook to update documentation when relevant changes are detected
-# This hook integrates with GitHub Copilot agent skills
+# Pre-commit hook to check for documentation updates when relevant changes are detected
+# Integrates with GitHub Copilot skills
 
 # Colors for output
 RED='\033[0;31m'
@@ -53,8 +53,8 @@ if ! git diff --cached --quiet; then
     if [ "$RELEVANT_CHANGES" = true ] && [ "$README_STAGED" = false ]; then
         echo -e "${YELLOW}📝 Relevant changes detected. Documentation may need updating.${NC}"
         echo ""
-        echo -e "${GREEN}Agent Skill: update-docs${NC}"
-        echo "The documentation update agent skill can review your changes and update README.md if necessary."
+        echo -e "${GREEN}Skill: update-docs${NC}"
+        echo "The update-docs skill can help review your changes and update README.md if necessary."
         echo ""
         echo "Changed files that may require documentation updates:"
         for file in "${STAGED_FILES[@]}"; do
@@ -66,13 +66,13 @@ if ! git diff --cached --quiet; then
             done
         done
         echo ""
-        echo -e "${YELLOW}💡 Tip: GitHub Copilot can use the update-docs agent skill to automatically"
+        echo -e "${YELLOW}💡 Tip: GitHub Copilot can use the update-docs skill to automatically"
         echo -e "   update your documentation based on these changes.${NC}"
         echo ""
-        echo "To use the agent skill:"
-        echo "  1. Review .github/agents/update-docs.md for the agent's instructions"
+        echo "To use the skill:"
+        echo "  1. The skill is located at .github/skills/update-docs/SKILL.md"
         echo "  2. Ask GitHub Copilot to update documentation based on your changes"
-        echo "  3. The agent will analyze changes and update README.md accordingly"
+        echo "  3. GitHub Copilot will use the skill to analyze changes and update README.md"
         echo ""
         
         # Optional: Uncomment to require manual confirmation

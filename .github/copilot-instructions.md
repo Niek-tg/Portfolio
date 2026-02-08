@@ -70,3 +70,12 @@ For detailed coding guidelines specific to each language:
 - **Future you (and your teammates) will thank you**
 - **If you need to add a comment to explain it, consider rewriting it more clearly**
 - **When in doubt, choose the more explicit, readable option**
+
+## 🤖 Skills
+
+This repository uses GitHub Copilot Skills for specialized guidance:
+
+- **update-docs** (`.github/skills/update-docs/SKILL.md`) - Helps keep README.md synchronized with code changes
+- **testing** (`.github/skills/testing/SKILL.md`) - Provides testing guidelines and best practices for Vitest
+
+GitHub Copilot automatically uses these skills when relevant. Run `./setup-hooks.sh` to enable the pre-commit hook that integrates with the update-docs skill.
