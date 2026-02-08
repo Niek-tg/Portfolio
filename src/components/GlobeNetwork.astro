@@ -152,6 +152,10 @@
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // Detect mobile device for performance optimizations
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
     // Create SVG
     const svg = d3.select(container)
       .append('svg')
@@ -160,7 +164,8 @@
       .attr('style', 'position: absolute; top: 0; left: 0;');
 
     // Create particles representing skills/technologies scattered across the "globe"
-    const numParticles = 80;
+    // Reduce particle count on mobile for better performance
+    const numParticles = isMobile ? 35 : 80;
     const particles: Particle[] = [];
     
     // Skill categories for coloring
@@ -196,10 +201,17 @@
     // Calculate connections between nearby particles
     function calculateConnections(): Connection[] {
       const connections: Connection[] = [];
-      const maxDistance = 150;
+      // Reduce max distance on mobile for fewer connections
+      const maxDistance = isMobile ? 120 : 150;
+      // Limit connections per particle on mobile
+      const maxConnectionsPerParticle = isMobile ? 3 : 5;
 
       for (let i = 0; i < particles.length; i++) {
+        let connectionCount = 0;
         for (let j = i + 1; j < particles.length; j++) {
+          // Skip if source particle already has max connections
+          if (connectionCount >= maxConnectionsPerParticle) break;
+
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
@@ -210,6 +222,7 @@
               target: particles[j],
               distance: distance
             });
+            connectionCount++;
           }
         }
       }
@@ -257,37 +270,52 @@
       .attr('cx', (d: Particle) => d.x)
       .attr('cy', (d: Particle) => d.y)
       .attr('fill', (d: Particle) => categoryColors[d.category])
-      .style('filter', 'drop-shadow(0 0 3px rgba(255, 255, 255, 0.5))');
+      // Disable expensive drop-shadow filter on mobile for better performance
+      .style('filter', isMobile ? 'none' : 'drop-shadow(0 0 3px rgba(255, 255, 255, 0.5))');
 
     // Animation loop (only if motion is not reduced)
-    function animate() {
+    // Throttle animation frame rate on mobile devices
+    let lastFrameTime = 0;
+    const targetFrameTime = isMobile ? 1000 / 30 : 1000 / 60; // 30fps on mobile, 60fps on desktop
+
+    function animate(currentTime: number = 0) {
       if (!prefersReducedMotion) {
-        // Update particle positions with smooth floating motion
-        particles.forEach((p: Particle) => {
-          p.x += p.vx;
-          p.y += p.vy;
+        const elapsed = currentTime - lastFrameTime;
 
-          // Bounce off edges with some padding
-          const padding = 50;
-          if (p.x < padding || p.x > width - padding) p.vx *= -1;
-          if (p.y < padding || p.y > height - padding) p.vy *= -1;
+        // Throttle frame rate for mobile performance
+        if (elapsed >= targetFrameTime) {
+          lastFrameTime = currentTime - (elapsed % targetFrameTime);
 
-          // Add slight random drift
-          p.vx += (Math.random() - 0.5) * 0.02;
-          p.vy += (Math.random() - 0.5) * 0.02;
+          // Update particle positions with smooth floating motion
+          particles.forEach((p: Particle) => {
+            p.x += p.vx;
+            p.y += p.vy;
 
-          // Limit velocity
-          const maxVel = 0.5;
-          p.vx = Math.max(-maxVel, Math.min(maxVel, p.vx));
-          p.vy = Math.max(-maxVel, Math.min(maxVel, p.vy));
-        });
+            // Bounce off edges with some padding
+            const padding = 50;
+            if (p.x < padding || p.x > width - padding) p.vx *= -1;
+            if (p.y < padding || p.y > height - padding) p.vy *= -1;
 
-        // Update visual positions
-        particleElements
-          .attr('cx', (d: Particle) => d.x)
-          .attr('cy', (d: Particle) => d.y);
+            // Add slight random drift
+            p.vx += (Math.random() - 0.5) * 0.02;
+            p.vy += (Math.random() - 0.5) * 0.02;
 
-        updateConnections();
+            // Limit velocity
+            const maxVel = 0.5;
+            p.vx = Math.max(-maxVel, Math.min(maxVel, p.vx));
+            p.vy = Math.max(-maxVel, Math.min(maxVel, p.vy));
+          });
+
+          // Update visual positions
+          particleElements
+            .attr('cx', (d: Particle) => d.x)
+            .attr('cy', (d: Particle) => d.y);
+
+          // Update connections less frequently on mobile (every 3rd frame)
+          if (!isMobile || Math.floor(currentTime / targetFrameTime) % 3 === 0) {
+            updateConnections();
+          }
+        }
       }
 
       animationFrameId = requestAnimationFrame(animate);
@@ -301,17 +329,19 @@
       animate();
     }
 
-    // Add interaction - highlight connections on hover
-    particleElements.on('mouseenter', function(_event: MouseEvent, d: Particle) {
-      connectionGroup.selectAll('line')
-        .classed('active', (conn: any) => 
-          conn.source.id === d.id || conn.target.id === d.id
-        );
-    });
+    // Add interaction - highlight connections on hover (disabled on touch devices for performance)
+    if (!isTouchDevice) {
+      particleElements.on('mouseenter', function(_event: MouseEvent, d: Particle) {
+        connectionGroup.selectAll('line')
+          .classed('active', (conn: any) => 
+            conn.source.id === d.id || conn.target.id === d.id
+          );
+      });
 
-    particleElements.on('mouseleave', function() {
-      connectionGroup.selectAll('line').classed('active', false);
-    });
+      particleElements.on('mouseleave', function() {
+        connectionGroup.selectAll('line').classed('active', false);
+      });
+    }
   }
 
   // Initialize on page load
