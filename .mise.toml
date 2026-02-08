@@ -3,7 +3,7 @@ node = "24.13.0"
 
 [env]
 # Disable Astro telemetry for consistent builds
-_.env.ASTRO_TELEMETRY_DISABLED = "1"
+ASTRO_TELEMETRY_DISABLED = "1"
 
 [tasks.dev]
 description = "Start development server"
