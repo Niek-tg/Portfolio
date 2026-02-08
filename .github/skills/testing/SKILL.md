@@ -152,7 +152,7 @@ describe('divideNumbers', () => {
 Available test commands:
 
 ```bash
-# Run tests once
+# Run the test suite (default: watch mode in interactive terminals)
 npm test
 
 # Run tests in watch mode (auto-rerun on changes)
@@ -165,7 +165,7 @@ npm run test:ui
 npm run test:coverage
 
 # Run specific test file
-npm test helpers.test.ts
+npm test -- helpers.test.ts
 
 # Run tests matching a pattern
 npm test -- --grep "formatDate"
