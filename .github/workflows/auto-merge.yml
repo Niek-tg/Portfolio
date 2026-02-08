@@ -31,50 +31,6 @@ jobs:
       
       - name: Run linting and type checking
         run: npm run build
-      
-      - name: Approve PR
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { data: reviews } = await github.rest.pulls.listReviews({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-            });
-            
-            const botApprovals = reviews.filter(r => r.user.type === 'Bot' && r.state === 'APPROVED');
-            
-            if (botApprovals.length === 0) {
-              await github.rest.pulls.createReview({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-                event: 'APPROVE',
-                body: '✅ Automated review passed. All checks succeeded.'
-              });
-            }
-      
-      - name: Add review comment
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { data: reviews } = await github.rest.pulls.listReviews({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-            });
-            
-            const botReviews = reviews.filter(r => r.user.type === 'Bot');
-            
-            if (botReviews.length === 0) {
-              await github.rest.pulls.createReview({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-                event: 'COMMENT',
-                body: '✅ Automated code review completed. Waiting for tests to pass before auto-merge.'
-              });
-            }
 
   auto-merge:
     needs: review
@@ -90,7 +46,49 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
       
-      - name: Enable auto-merge
-        run: gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Approve and enable auto-merge
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Approve the PR
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+            
+            const botApprovals = reviews.filter(r => r.user.type === 'Bot' && r.state === 'APPROVED');
+            
+            if (botApprovals.length === 0) {
+              await github.rest.pulls.createReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                event: 'APPROVE',
+                body: '✅ Automated review passed. All checks succeeded. Enabling auto-merge.'
+              });
+            }
+            
+            // Enable auto-merge
+            await github.rest.pulls.updateBranch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+            });
+            
+            await github.graphql(`
+              mutation($pullRequestId: ID!) {
+                enablePullRequestAutoMerge(input: {
+                  pullRequestId: $pullRequestId,
+                  mergeMethod: SQUASH
+                }) {
+                  pullRequest {
+                    autoMergeRequest {
+                      enabledAt
+                    }
+                  }
+                }
+              }
+            `, {
+              pullRequestId: context.payload.pull_request.node_id
+            });
