@@ -1,97 +1,36 @@
 # GitHub Copilot Instructions
 
-This file provides instructions and guardrails for GitHub Copilot when working on this repository.
+This file provides general instructions and guardrails for GitHub Copilot when working on this repository.
 
-## Core Principles
+## Core Principle
 
-### Readability Over Performance
-
-**The most important principle: Write readable code over fast code.**
+**Write readable code over fast code.**
 
 - Prioritize code that is easy to understand, maintain, and modify
 - Choose clarity over cleverness
 - Optimize only when necessary and after profiling shows a real performance issue
 - Readable code reduces bugs and makes future changes easier
 
-## Code Style Guidelines
+## Language-Specific Instructions
 
-### General Guidelines
+For detailed coding guidelines specific to each language:
+- **TypeScript**: See [copilot-instructions-typescript.md](./copilot-instructions-typescript.md)
 
-- **Use descriptive variable and function names**: Names should clearly indicate purpose
-  - Good: `userEmailAddress`, `calculateTotalPrice`, `isValidInput`
-  - Bad: `e`, `calc`, `x`, `data`
+## General Guidelines
 
-- **Prefer explicit over implicit**: Make intentions clear
-  - Use explicit return statements
-  - Avoid complex ternary operators (break into if/else if clearer)
-  - Write out conditions rather than using shortcuts when it improves clarity
-
-- **Keep functions small and focused**: Each function should do one thing well
-  - Ideal function length: 5-20 lines
-  - If a function is doing multiple things, split it
-
+- **Use descriptive names**: Variables, functions, and classes should clearly indicate their purpose
+- **Keep functions small and focused**: Each function should do one thing well (5-20 lines ideal)
 - **Add meaningful comments**: Document the "why", not the "what"
-  - Use JSDoc comments for all exported functions
-  - Explain complex logic or non-obvious decisions
-  - Don't comment obvious code
+- **Prefer explicit over implicit**: Make intentions clear
+- **Single Responsibility Principle**: Each component has one job
 
-### TypeScript Specific
+## Project Structure
 
-- **Use explicit types**: Avoid `any`, prefer explicit type definitions
-  - Define interfaces for object shapes
-  - Use type aliases for complex types
-  - Leverage TypeScript's type system for safety
-
-- **Prefer readable type definitions over complex generics**
-  - Break complex types into smaller, named pieces
-  - Use type aliases to give descriptive names to types
-
-### Code Organization
-
-- **Co-locate related code**: Keep test files next to source files
-  - Source: `src/utils/helpers.ts`
-  - Tests: `src/utils/helpers.test.ts`
-  - No separate `__tests__` directories
-
-- **Organize imports logically**:
-  1. External dependencies (npm packages)
-  2. Internal absolute imports
-  3. Relative imports
-  - Add blank lines between groups
+- **Co-locate tests with source files**: Keep test files next to source files
+  - Example: `src/utils/helpers.ts` and `src/utils/helpers.test.ts`
+  - Do NOT use separate `__tests__` directories
 
 - **Use consistent file structure**: Follow existing patterns in the project
-
-### Functions and Logic
-
-- **Single Responsibility Principle**: Each function has one job
-  - Functions should be easy to name because they do one thing
-  - If you're using "and" in the function name, it probably does too much
-
-- **Avoid deep nesting**: Flatten logic when possible
-  - Use early returns to reduce nesting
-  - Extract nested logic into separate functions
-  - Maximum nesting depth: 3 levels
-
-- **Prefer declarative over imperative**: Use array methods, clear conditionals
-  - Good: `items.filter(item => item.isActive).map(item => item.name)`
-  - Avoid: Complex loops with multiple mutations
-
-### Error Handling
-
-- **Be explicit about errors**: Don't silently fail
-  - Validate inputs explicitly
-  - Throw descriptive errors
-  - Use meaningful error messages that help debugging
-
-### Testing
-
-- **Write readable tests**: Tests are documentation
-  - Use descriptive test names that explain what is being tested
-  - Follow the Arrange-Act-Assert pattern
-  - One logical assertion per test
-  - Use `describe` blocks to group related tests
-
-- **Test behavior, not implementation**: Focus on what the code does, not how
 
 ## Project-Specific Conventions
 
@@ -115,67 +54,15 @@ This file provides instructions and guardrails for GitHub Copilot when working o
   - Explicit return type
   - Co-located test file
 
-## Examples
+## Testing
 
-### Good: Readable Function
+- **Write readable tests**: Tests are documentation
+  - Use descriptive test names that explain what is being tested
+  - Follow the Arrange-Act-Assert pattern
+  - One logical assertion per test
+  - Use `describe` blocks to group related tests
 
-```typescript
-/**
- * Calculate the total price including tax
- */
-export function calculateTotalWithTax(subtotal: number, taxRate: number): number {
-  const tax = subtotal * taxRate;
-  const total = subtotal + tax;
-  return total;
-}
-```
-
-### Bad: Less Readable
-
-```typescript
-// Less clear, harder to understand at a glance
-export const calc = (s: number, t: number) => s + s * t;
-```
-
-### Good: Clear Control Flow
-
-```typescript
-export function processUser(user: User): ProcessedUser | null {
-  if (!user) {
-    return null;
-  }
-
-  if (!user.email) {
-    throw new Error('User email is required');
-  }
-
-  return {
-    id: user.id,
-    email: user.email.toLowerCase(),
-    name: user.name.trim(),
-  };
-}
-```
-
-### Bad: Nested and Hard to Follow
-
-```typescript
-export function processUser(user: User) {
-  if (user) {
-    if (user.email) {
-      return {
-        id: user.id,
-        email: user.email.toLowerCase(),
-        name: user.name.trim(),
-      };
-    } else {
-      throw new Error('User email is required');
-    }
-  } else {
-    return null;
-  }
-}
-```
+- **Test behavior, not implementation**: Focus on what the code does, not how
 
 ## Remember
 
