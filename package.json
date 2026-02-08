@@ -14,13 +14,15 @@
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
-    "astro": "^5.17.1",
     "@astrojs/check": "^0.9.6",
+    "astro": "^5.17.1",
+    "d3": "^7.9.0",
     "typescript": "^5.7.2"
   },
   "devDependencies": {
-    "vitest": "^4.0.18",
+    "@types/d3": "^7.4.3",
+    "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
-    "@vitest/coverage-v8": "^4.0.18"
+    "vitest": "^4.0.18"
   }
 }
