@@ -12,8 +12,11 @@ echo -e "${YELLOW}🤖 Checking for documentation updates...${NC}"
 
 # Check if there are any staged changes
 if ! git diff --cached --quiet; then
-    # Get list of staged files
-    STAGED_FILES=$(git diff --cached --name-only)
+    # Get list of staged files (safely handling filenames with spaces)
+    STAGED_FILES=()
+    while IFS= read -r -d '' file; do
+        STAGED_FILES+=("$file")
+    done < <(git diff --cached --name-only -z)
     
     # Define patterns for files that might require documentation updates
     # Check for changes in source files, config files, or package.json
@@ -28,7 +31,7 @@ if ! git diff --cached --quiet; then
     RELEVANT_CHANGES=false
     
     # Check if any staged files match relevant patterns
-    for file in $STAGED_FILES; do
+    for file in "${STAGED_FILES[@]}"; do
         for pattern in "${RELEVANT_PATTERNS[@]}"; do
             if [[ $file == *"$pattern"* ]]; then
                 RELEVANT_CHANGES=true
@@ -39,9 +42,12 @@ if ! git diff --cached --quiet; then
     
     # Check if README.md is already being updated
     README_STAGED=false
-    if echo "$STAGED_FILES" | grep -q "README.md"; then
-        README_STAGED=true
-    fi
+    for file in "${STAGED_FILES[@]}"; do
+        if [ "$file" = "README.md" ]; then
+            README_STAGED=true
+            break
+        fi
+    done
     
     # If relevant changes detected and README is not already staged
     if [ "$RELEVANT_CHANGES" = true ] && [ "$README_STAGED" = false ]; then
@@ -51,7 +57,7 @@ if ! git diff --cached --quiet; then
         echo "The documentation update agent skill can review your changes and update README.md if necessary."
         echo ""
         echo "Changed files that may require documentation updates:"
-        for file in $STAGED_FILES; do
+        for file in "${STAGED_FILES[@]}"; do
             for pattern in "${RELEVANT_PATTERNS[@]}"; do
                 if [[ $file == *"$pattern"* ]]; then
                     echo "  - $file"

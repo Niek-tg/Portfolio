@@ -61,9 +61,14 @@ When analyzing changes, consider updating these README sections:
 
 ## Process
 
-This agent is triggered automatically before commits through a pre-commit hook. The hook will:
-1. Check for staged changes
-2. Invoke this agent if relevant changes are detected
-3. Allow the agent to update README.md
-4. Stage the updated README.md
-5. Proceed with the commit
+This agent provides guidelines for a pre-commit hook workflow:
+
+1. A pre-commit hook (`.github/hooks/pre-commit`) checks for staged changes before each commit
+2. If relevant changes are detected, the hook displays a reminder to review documentation
+3. The developer should review this agent skill's guidelines to determine if README.md needs updating
+4. If updates are needed, the developer can:
+   - Use GitHub Copilot with this agent skill's instructions to generate appropriate updates
+   - Or manually update README.md following these guidelines
+5. Stage the updated README.md and proceed with the commit
+
+**Note:** The pre-commit hook does not automatically modify or stage files. It serves as a reminder system to help maintain documentation consistency.

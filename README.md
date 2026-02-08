@@ -95,11 +95,11 @@ To enable GitHub Pages for your repository:
 
 ## 🤖 Agent Skills
 
-This repository includes a GitHub Copilot agent skill for automatic documentation updates.
+This repository includes a GitHub Copilot agent skill for documentation maintenance.
 
 ### Documentation Update Agent
 
-The `update-docs` agent skill automatically keeps the README.md file up-to-date with code changes.
+The `update-docs` agent skill helps keep the README.md file up-to-date with code changes.
 
 **Setup:**
 1. Run `./setup-hooks.sh` to install the pre-commit hook
@@ -107,13 +107,14 @@ The `update-docs` agent skill automatically keeps the README.md file up-to-date 
 
 **How it works:**
 - Before each commit, the pre-commit hook analyzes staged changes
-- If relevant changes are detected (new features, dependencies, config changes, etc.), you'll be reminded to update documentation
-- GitHub Copilot can use the agent skill instructions in `.github/agents/update-docs.md` to automatically update the README
+- If relevant changes are detected (new features, dependencies, config changes, etc.), you'll be reminded to review documentation
+- You can use GitHub Copilot with the agent skill instructions in `.github/agents/update-docs.md` to help update the README
+- Or update the README manually following the agent skill guidelines
 
 **Agent skill configuration:**
 - Located in `.github/agents/update-docs.md`
 - Defines rules for when and how to update documentation
-- Can be used by GitHub Copilot to automatically maintain accurate documentation
+- Provides guidance for GitHub Copilot or manual documentation updates
 
 **Relevant changes include:**
 - New pages, components, or features
@@ -121,7 +122,7 @@ The `update-docs` agent skill automatically keeps the README.md file up-to-date 
 - Changes to build/deployment processes
 - New configuration requirements
 
-The agent ensures documentation stays current without manual effort, making it easier for contributors and users to understand the project.
+The agent skill provides a reminder workflow to help keep documentation current, reducing the likelihood of outdated documentation.
 
 ## 📄 License
 

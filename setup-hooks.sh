@@ -3,17 +3,24 @@
 
 echo "🔧 Setting up git hooks..."
 
-# Get the git hooks directory
-HOOKS_DIR=".git/hooks"
+# Get the git hooks directory in a way that works with worktrees/submodules
+HOOKS_DIR="$(git rev-parse --git-path hooks 2>/dev/null)"
 
-# Check if .git directory exists
-if [ ! -d ".git" ]; then
-    echo "❌ Error: .git directory not found. Are you in the repository root?"
+# Ensure we are inside a git repository and have a valid hooks directory path
+if [ -z "$HOOKS_DIR" ] || ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "❌ Error: Not inside a git repository. Are you in the repository root?"
     exit 1
 fi
 
 # Create hooks directory if it doesn't exist
 mkdir -p "$HOOKS_DIR"
+
+# Check if pre-commit hook already exists
+if [ -f "$HOOKS_DIR/pre-commit" ]; then
+    echo "⚠️  Warning: A pre-commit hook already exists at $HOOKS_DIR/pre-commit"
+    echo "Creating backup at $HOOKS_DIR/pre-commit.backup"
+    cp "$HOOKS_DIR/pre-commit" "$HOOKS_DIR/pre-commit.backup"
+fi
 
 # Copy pre-commit hook
 if [ -f ".github/hooks/pre-commit" ]; then

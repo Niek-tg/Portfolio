@@ -10,7 +10,7 @@ First, install the git hooks:
 ./setup-hooks.sh
 ```
 
-This will install the pre-commit hook that integrates with the agent skill.
+This will install the pre-commit hook that displays reminders when relevant code changes are staged. The hook helps you remember to review and update documentation as needed.
 
 ## Example Workflow
 
