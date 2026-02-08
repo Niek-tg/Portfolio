@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle.astro';
 
 interface Props {
   title: string;
@@ -17,6 +18,24 @@ const { title, description = 'Personal Portfolio and Resume' } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/Portfolio/favicon.svg" />
     <title>{title}</title>
+    <script is:inline>
+      // Initialize theme before page renders to prevent flash
+      (function() {
+        const stored = localStorage.getItem('theme');
+        const prefersDark =
+          typeof window !== 'undefined' &&
+          window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)');
+
+        if (stored === 'light' || stored === 'dark') {
+          document.documentElement.setAttribute('data-theme', stored);
+        } else if (prefersDark && prefersDark.matches) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </head>
   <body>
     <nav class="navbar">
@@ -27,6 +46,7 @@ const { title, description = 'Personal Portfolio and Resume' } = Astro.props;
           <li><a href="/Portfolio/resume">Resume</a></li>
           <li><a href="/Portfolio/about">About</a></li>
         </ul>
+        <ThemeToggle />
       </div>
     </nav>
     <main>
