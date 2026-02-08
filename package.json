@@ -8,11 +8,19 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "astro": "^5.17.1",
     "@astrojs/check": "^0.9.6",
     "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8",
+    "@vitest/ui": "^2.1.8",
+    "@vitest/coverage-v8": "^2.1.8"
   }
 }
