@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import SkillsNetwork from '../components/SkillsNetwork.astro';
 ---
 
 <Layout title="Home - Portfolio">
@@ -15,6 +16,16 @@ import Layout from '../layouts/Layout.astro';
   </section>
 
   <section class="featured">
+    <div class="container">
+      <h2>Interactive Skills Network</h2>
+      <p class="viz-description">
+        Explore my technical skills and their relationships. Hover over nodes to see connections, drag to rearrange, and scroll to zoom.
+      </p>
+      <SkillsNetwork />
+    </div>
+  </section>
+
+  <section class="skills-static">
     <div class="container">
       <h2>Skills & Expertise</h2>
       <div class="skills-grid">
