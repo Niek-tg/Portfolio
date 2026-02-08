@@ -70,25 +70,35 @@ jobs:
             }
             
             // Enable auto-merge
-            await github.rest.pulls.updateBranch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-            });
+            try {
+              await github.rest.pulls.updateBranch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+              });
+            } catch (error) {
+              console.log('Branch update not needed or failed:', error.message);
+            }
             
-            await github.graphql(`
-              mutation($pullRequestId: ID!) {
-                enablePullRequestAutoMerge(input: {
-                  pullRequestId: $pullRequestId,
-                  mergeMethod: SQUASH
-                }) {
-                  pullRequest {
-                    autoMergeRequest {
-                      enabledAt
+            try {
+              await github.graphql(`
+                mutation($pullRequestId: ID!) {
+                  enablePullRequestAutoMerge(input: {
+                    pullRequestId: $pullRequestId,
+                    mergeMethod: SQUASH
+                  }) {
+                    pullRequest {
+                      autoMergeRequest {
+                        enabledAt
+                      }
                     }
                   }
                 }
-              }
-            `, {
-              pullRequestId: context.payload.pull_request.node_id
-            });
+              `, {
+                pullRequestId: context.payload.pull_request.node_id
+              });
+              console.log('Auto-merge enabled successfully');
+            } catch (error) {
+              console.log('Failed to enable auto-merge:', error.message);
+              throw error;
+            }
