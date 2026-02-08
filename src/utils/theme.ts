@@ -13,7 +13,11 @@ export function getPreferredTheme(): 'light' | 'dark' {
   }
   
   // Fall back to system preference
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  const prefersDarkQuery = window.matchMedia
+    ? window.matchMedia('(prefers-color-scheme: dark)')
+    : null;
+
+  if (prefersDarkQuery && prefersDarkQuery.matches) {
     return 'dark';
   }
   
