@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💡 Contribution Guidelines
+    url: https://github.com/Niek-tg/Portfolio/blob/main/CONTRIBUTING.md
+    about: Please contribute through pull requests with code changes instead of creating issues. See our contribution guidelines for more information.
+  - name: 🔄 Create a Pull Request
+    url: https://github.com/Niek-tg/Portfolio/compare
+    about: We prefer code-based contributions! Fork the repository, make your changes, and submit a pull request with your suggestions.

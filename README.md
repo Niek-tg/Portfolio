@@ -124,6 +124,19 @@ The `update-docs` agent skill helps keep the README.md file up-to-date with code
 
 The agent skill provides a reminder workflow to help keep documentation current, reducing the likelihood of outdated documentation.
 
+## 🤝 Contributing
+
+We welcome contributions! However, **we prefer code-based contributions over issue reports.**
+
+Instead of creating GitHub issues, please:
+- Fork the repository
+- Make your improvements directly in the code
+- Submit a pull request with your changes
+
+This approach provides concrete solutions and makes it easier to review and integrate improvements.
+
+For detailed guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## 📄 License
 
 This project is open source and available under the MIT License.
