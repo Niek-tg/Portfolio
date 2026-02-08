@@ -22,21 +22,14 @@ A personal portfolio website built with [Astro](https://astro.build) to showcase
 
 ### Prerequisites
 
-- Node.js 24.13.0 or higher (LTS recommended)
-- npm
-
-**Recommended**: Use [mise](https://mise.jdx.dev/) to manage Node.js and other project tools automatically:
+Install [mise](https://mise.jdx.dev/) to automatically manage Node.js and other project tools:
 
 ```bash
 # Install mise (see https://mise.jdx.dev/getting-started.html)
 curl https://mise.run | sh
-
-# mise will automatically install the correct Node.js version
-# when you enter the project directory
-cd Portfolio
 ```
 
-Or manually install Node.js 24.13.0+ from [nodejs.org](https://nodejs.org/).
+mise will automatically install the correct Node.js version and dependencies when you enter the project directory.
 
 ### Installation
 
