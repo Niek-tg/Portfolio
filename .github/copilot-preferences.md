@@ -1,38 +1,30 @@
-# GitHub Copilot Coding Preferences
+# GitHub Copilot Preferences
 
-This file contains coding preferences and guidelines for GitHub Copilot when working on this repository.
+This file defines specific preferences for how GitHub Copilot should work in this repository.
 
 ## Testing Preferences
 
 ### Test File Location
-- **Tests should be co-located with source files** in the same folder
-- Do NOT use separate `__tests__` or `test` directories
-- Test files should use the `.test.ts` or `.spec.ts` extension
+Tests must be co-located with source files in the same directory.
 
-**Example Structure:**
+**Correct structure:**
 ```
-src/
-  utils/
-    helpers.ts          # Source file
-    helpers.test.ts     # Test file (same folder)
+src/utils/
+  helpers.ts
+  helpers.test.ts
 ```
 
-**NOT:**
+**Incorrect structure:**
 ```
-src/
-  utils/
-    helpers.ts
-    __tests__/
-      helpers.test.ts   # ❌ Do not use this pattern
+src/utils/
+  helpers.ts
+  __tests__/
+    helpers.test.ts  ❌
 ```
 
 ### Test File Naming
 - Use `.test.ts` extension for test files
-- Test file name should match the source file: `{filename}.test.ts`
+- Test file name should match source file: `{filename}.test.ts`
+- Use relative imports in tests: `import { fn } from './module'`
 
-### Import Paths
-- When tests are co-located, use relative imports: `import { fn } from './module'`
-
-## Other Preferences
-
-*(Add more preferences here as needed)*
+For detailed testing guidelines, see the **testing skill** at `.github/skills/testing/SKILL.md`.
