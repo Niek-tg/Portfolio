@@ -50,6 +50,13 @@ npm run dev
 
 5. Open your browser and visit `http://localhost:4321`
 
+### Available Scripts
+
+- `npm run dev` / `npm start` - Start the development server
+- `npm run build` - Build the site for production (includes type checking)
+- `npm run preview` - Preview the production build locally
+- `npm run check` - Run Astro's type checking without building
+
 ## 🏗️ Building for Production
 
 To create a production build:
