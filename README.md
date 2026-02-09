@@ -22,8 +22,24 @@ A personal portfolio website built with [Astro](https://astro.build) to showcase
 
 ### Prerequisites
 
-- Node.js 18 or higher
-- npm
+Install [mise](https://mise.jdx.dev/) to automatically manage Node.js and other project tools:
+
+```bash
+# Recommended: use your package manager
+# macOS
+brew install mise
+
+# Ubuntu/Debian
+apt install mise
+
+# Arch Linux
+pacman -S mise
+
+# Or follow the official installation instructions:
+# https://mise.jdx.dev/getting-started.html
+```
+
+mise will automatically ensure the correct Node.js version (and other configured tools) are available when you enter the project directory.
 
 ### Installation
 
