@@ -109,12 +109,12 @@
 
   :global(#globe-network .connection) {
     stroke: var(--primary-color);
-    opacity: 0.15;
+    stroke-opacity: 0.15;
     stroke-width: 1;
   }
 
   :global(#globe-network .connection.active) {
-    opacity: 0.5;
+    stroke-opacity: 0.5;
     stroke-width: 2;
   }
 
@@ -275,7 +275,7 @@
         .attr('y1', (d: Connection) => d.source.y)
         .attr('x2', (d: Connection) => d.target.x)
         .attr('y2', (d: Connection) => d.target.y)
-        .attr('opacity', (d: Connection) => Math.max(0, 1 - d.distance / 150));
+        .attr('stroke-opacity', (d: Connection) => Math.max(0, 1 - d.distance / 150));
     }
 
     // Create particles

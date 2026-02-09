@@ -111,12 +111,20 @@ body {
 .nav-logo {
   font-size: 1.5rem;
   font-weight: 700;
+  color: var(--primary-color);
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-decoration: none;
   letter-spacing: -0.025em;
+}
+
+@media (forced-colors: active) {
+  .nav-logo {
+    -webkit-text-fill-color: revert;
+    background: none;
+  }
 }
 
 .nav-menu {
@@ -303,6 +311,7 @@ main {
 }
 
 .skill-card h3 {
+  color: var(--primary-color);
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -310,6 +319,13 @@ main {
   margin-bottom: 1rem;
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+@media (forced-colors: active) {
+  .skill-card h3 {
+    -webkit-text-fill-color: revert;
+    background: none;
+  }
 }
 
 .skill-card p {
@@ -448,6 +464,7 @@ main {
 }
 
 .skill-category h3 {
+  color: var(--primary-color);
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -455,6 +472,13 @@ main {
   margin-bottom: 0.875rem;
   font-size: 1.25rem;
   font-weight: 700;
+}
+
+@media (forced-colors: active) {
+  .skill-category h3 {
+    -webkit-text-fill-color: revert;
+    background: none;
+  }
 }
 
 .skill-category p {
