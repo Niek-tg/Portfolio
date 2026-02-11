@@ -40,108 +40,19 @@ src/
 - `npm run test:ui` - Vitest UI
 - `npm run test:coverage` - Coverage report
 
-## Project-Specific Conventions
+## Coding Guidelines
 
-### Astro Components
-- Use TypeScript interfaces for props
-- Keep component logic simple (extract complex logic to utils/)
-- Frontmatter (between `---`) for TypeScript/JavaScript
-- Template below frontmatter for HTML markup
+This agent follows the project's coding conventions and principles defined in:
+- **Project Conventions**: See `.github/copilot-instructions.md` for Astro components, styling, testing, and TypeScript conventions
+- **Coding Principles**: See `.github/copilot-instructions-coding-principles.md` for mandatory coding principles (structure, architecture, naming, quality, etc.)
 
-Example:
-```astro
----
-interface Props {
-  title: string;
-  items: string[];
-}
-
-const { title, items } = Astro.props;
----
-
-<div>
-  <h2>{title}</h2>
-  <ul>
-    {items.map(item => <li>{item}</li>)}
-  </ul>
-</div>
-```
-
-### Testing
-- **Co-locate tests**: `file.ts` → `file.test.ts` (NOT in `__tests__/`)
-- Use Vitest: `describe`, `it`, `expect`
-- Follow Arrange-Act-Assert pattern
-- See `.github/skills/testing/SKILL.md` for detailed guidelines
-
-### TypeScript
-- Explicit types for function parameters and returns
-- Use interfaces for complex types
-- See `.github/copilot-instructions-typescript.md` for guidelines
-
-### Styling
-- Semantic class names
-- Keep CSS simple and maintainable
-- Follow existing patterns in `src/styles/`
-
-## Mandatory Coding Principles
-
-These coding principles are mandatory:
-
-### 1. Structure
-- Use a consistent, predictable project layout
-- Group code by feature/screen; keep shared utilities minimal
-- Create simple, obvious entry points
-- Before scaffolding multiple files, identify shared structure first
-- Use Astro-native composition (layouts, base templates, shared components)
-- **Code smell**: Duplication requiring the same fix in multiple places
-
-### 2. Architecture
-- Prefer flat, explicit code over abstractions or deep hierarchies
-- Avoid clever patterns, metaprogramming, and unnecessary indirection
-- Minimize coupling so files can be safely regenerated
-- **For Astro**: Leverage component islands, avoid complex state management
-
-### 3. Functions and Modules
-- Keep control flow linear and simple
-- Use small-to-medium functions (5-20 lines ideal); avoid deeply nested logic
-- Pass state explicitly; avoid globals
-- Extract complex logic from Astro components to utility functions
-
-### 4. Naming and Comments
-- Use descriptive-but-simple names
-- Functions/variables should clearly indicate purpose
-- Comment only to note invariants, assumptions, or external requirements
-- Don't comment the "what", document the "why"
-
-### 5. Logging and Errors
-- Emit detailed, structured logs at key boundaries
-- Make errors explicit and informative
-- Provide helpful error messages for users
-
-### 6. Regenerability
-- Write code so any file/module can be rewritten from scratch without breaking the system
-- Prefer clear, declarative configuration (JSON/YAML/etc.)
-- Minimize interdependencies
-- **For Astro**: Each component should be self-contained
-
-### 7. Platform Use
-- Use Astro conventions directly and simply
-- Follow Astro best practices for static site generation
-- Leverage Astro's build-time optimizations
-- Don't over-abstract the framework
-
-### 8. Modifications
-- When extending/refactoring, follow existing patterns
-- Check similar code in the project first
-- Prefer full-file rewrites over micro-edits unless told otherwise
-- Match the existing style and structure
-
-### 9. Quality
-- Favor deterministic, testable behavior
-- Keep tests simple and focused on verifying observable behavior
-- Write tests for utility functions
-- Ensure builds pass: `npm run build`
-- Ensure type checks pass: `npm run check`
+Key highlights:
+- Extract complex logic from Astro components to utility functions in `src/utils/`
+- Co-locate tests with source files: `file.ts` → `file.test.ts`
+- Use Vitest with Arrange-Act-Assert pattern
+- Explicit TypeScript types for function parameters and returns
+- Keep functions small (5-20 lines ideal) and focused
+- Write readable, maintainable code over clever optimizations
 
 ## Workflow
 
@@ -222,13 +133,13 @@ describe('formatDate', () => {
 ## Quality Checklist
 
 Before completing a task:
-- [ ] Code follows project conventions
+- [ ] Code follows project conventions (see `.github/copilot-instructions.md`)
 - [ ] TypeScript types are explicit and correct
 - [ ] Tests written for utility functions (co-located)
 - [ ] Builds successfully: `npm run build`
 - [ ] Type checks pass: `npm run check`
 - [ ] Tests pass: `npm test`
-- [ ] Follows mandatory coding principles
+- [ ] Follows mandatory coding principles (see `.github/copilot-instructions-coding-principles.md`)
 - [ ] Matches existing code patterns
 
 ## Remember

@@ -19,6 +19,12 @@ This is an Astro portfolio website with:
 - Deployment: GitHub Pages
 - Key directories: `src/pages/`, `src/components/`, `src/styles/`
 
+Project conventions and coding principles are defined in:
+- `.github/copilot-instructions.md` - Project-specific conventions
+- `.github/copilot-instructions-coding-principles.md` - Mandatory coding principles
+
+All agents reference these instructions for consistency.
+
 ## Agents
 
 These are the only agents you can call. Each has a specific role:

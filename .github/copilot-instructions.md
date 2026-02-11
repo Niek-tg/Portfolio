@@ -37,6 +37,7 @@ This is an Astro-based portfolio website built with TypeScript. The project emph
 
 For detailed coding guidelines specific to each language:
 - **TypeScript**: See [copilot-instructions-typescript.md](./copilot-instructions-typescript.md)
+- **Coding Principles**: See [copilot-instructions-coding-principles.md](./copilot-instructions-coding-principles.md) for mandatory coding principles
 
 ## General Guidelines
 
@@ -58,14 +59,35 @@ For detailed coding guidelines specific to each language:
 
 ### Astro Components
 
-- Keep component logic simple and readable
-- Extract complex logic into utility functions
-- Use clear prop names with TypeScript interfaces
+- Use TypeScript interfaces for props
+- Keep component logic simple (extract complex logic to `src/utils/`)
+- Frontmatter (between `---`) for TypeScript/JavaScript code
+- Template below frontmatter for HTML markup
+
+Example:
+```astro
+---
+interface Props {
+  title: string;
+  items: string[];
+}
+
+const { title, items } = Astro.props;
+---
+
+<div>
+  <h2>{title}</h2>
+  <ul>
+    {items.map(item => <li>{item}</li>)}
+  </ul>
+</div>
+```
 
 ### Styling
 
 - Use semantic class names that describe purpose
 - Keep CSS simple and maintainable
+- Follow existing patterns in `src/styles/`
 - Avoid overly clever CSS tricks
 
 ### Utilities and Helpers
@@ -75,6 +97,12 @@ For detailed coding guidelines specific to each language:
   - Clear parameter names
   - Explicit return type
   - Co-located test file
+
+### TypeScript
+
+- Explicit types for function parameters and returns
+- Use interfaces for complex types
+- See [copilot-instructions-typescript.md](./copilot-instructions-typescript.md) for detailed guidelines
 
 ## Testing
 

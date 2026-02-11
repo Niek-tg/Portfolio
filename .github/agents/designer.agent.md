@@ -62,6 +62,7 @@ Check these files to understand current design:
 - `src/styles/global.css` - Global styles and design tokens
 - `src/pages/*.astro` - Existing page layouts
 - `src/components/*.astro` - Component styling patterns
+- `.github/copilot-instructions.md` - Project conventions for Astro and styling
 
 Match the existing style unless explicitly redesigning.
 

@@ -34,6 +34,8 @@ Key conventions:
 - Tests co-located with source: `file.ts` → `file.test.ts`
 - Component props use TypeScript interfaces
 - Follow existing patterns in the codebase
+- See `.github/copilot-instructions.md` for project conventions
+- See `.github/copilot-instructions-coding-principles.md` for coding principles
 ```
 
 ## Workflow
