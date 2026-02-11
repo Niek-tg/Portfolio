@@ -10,6 +10,7 @@ A personal portfolio website built with [Astro](https://astro.build) to showcase
 - About page
 - Fast and optimized with Astro
 - Automated deployment to GitHub Pages
+- Multi-agent orchestration system for complex development tasks
 - GitHub Copilot skills for development workflow enhancement
 
 ## 🛠️ Tech Stack
@@ -109,9 +110,55 @@ To enable GitHub Pages for your repository:
 - Modify `src/styles/global.css` to customize the styling
 - Update `astro.config.mjs` to change site configuration
 
-## 🤖 Skills
+## 🤖 AI Development Tools
 
-This repository uses GitHub Copilot Skills for enhanced development workflows.
+This repository uses GitHub Copilot with enhanced capabilities through Skills and a Multi-Agent System.
+
+### Multi-Agent Orchestration System
+
+A sophisticated multi-agent system that coordinates complex development tasks across specialized AI agents. Located in `.github/agents/`.
+
+**Orchestrator** - Project coordinator that delegates work to specialist agents
+- Breaks down complex requests into manageable tasks
+- Manages parallel and sequential execution
+- Prevents file conflicts through explicit assignment
+- Coordinates Planner, Coder, and Designer agents
+
+**Planner** - Creates comprehensive implementation plans
+- Researches the codebase and existing patterns
+- Identifies edge cases and dependencies
+- Determines which tasks can run in parallel
+- Provides detailed, actionable steps
+
+**Coder** - Implements code following best practices
+- Writes clean, maintainable code with tests
+- Follows mandatory coding principles
+- Verifies builds and type checks
+- Extracts complex logic into testable utilities
+
+**Designer** - Handles all UI/UX design work
+- Creates responsive, accessible designs
+- Implements semantic, maintainable CSS
+- Ensures WCAG compliance
+- Makes authoritative design decisions
+
+#### Using the Multi-Agent System
+
+In GitHub Copilot Chat, mention the Orchestrator:
+```
+@Orchestrator Add a blog section to the portfolio
+@Orchestrator Redesign the homepage with a hero section
+@Orchestrator Fix TypeScript errors and improve type definitions
+```
+
+You can also call agents directly for specific tasks:
+```
+@Planner What's the best approach for adding authentication?
+@Coder Create a date formatting utility with tests
+@Designer Design a responsive navigation menu
+```
+
+See [`.github/agents/README.md`](.github/agents/README.md) for detailed documentation.
 
 ### Available Skills
 
@@ -127,7 +174,7 @@ Skills are located in `.github/skills/` following the [Agent Skills standard](ht
 - Includes examples and patterns for well-structured tests
 - Explains the project's testing conventions
 
-### Using Skills
+#### Using Skills
 
 GitHub Copilot automatically uses skills when relevant to your task. You can also explicitly reference them:
 
@@ -136,7 +183,7 @@ Use the update-docs skill to update the README
 Use the testing skill to help write tests for this function
 ```
 
-### How It Works
+#### How It Works
 
 1. Run `./setup-hooks.sh` to install the pre-commit hook
 2. Make code changes and stage them with `git add`
