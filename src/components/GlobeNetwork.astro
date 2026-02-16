@@ -4,7 +4,7 @@
 
 <div id="globe-network" class="globe-container">
   <div class="overlay-content">
-    <div id="space-invaders-prompt" class="terminal-prompt" role="dialog" aria-live="polite">
+    <div id="space-invaders-prompt" class="terminal-prompt" aria-live="polite">
       <p>$ Enable Space Invaders mode?</p>
       <div class="terminal-actions">
         <button id="enable-space-invaders" type="button" class="terminal-button">yes</button>
@@ -318,6 +318,10 @@
       return;
     }
 
+    if (enableButton.dataset.promptBound === 'true' && skipButton.dataset.promptBound === 'true') {
+      return;
+    }
+
     enableButton.onclick = () => {
       hasAnsweredSpaceInvadersPrompt = true;
       isSpaceInvadersEnabled = true;
@@ -329,6 +333,9 @@
       isSpaceInvadersEnabled = false;
       configureOverlay(container, false);
     };
+
+    enableButton.dataset.promptBound = 'true';
+    skipButton.dataset.promptBound = 'true';
   }
 
   function initGlobeVisualization(container: HTMLElement) {
@@ -509,9 +516,15 @@
 
     if (isSpaceInvadersEnabled) {
       configureOverlay(container, true);
-      const { initSpaceInvadersGame } = await import('../utils/spaceInvadersGame');
-      cleanupRuntime = initSpaceInvadersGame(container);
-      return;
+      try {
+        const { initSpaceInvadersGame } = await import('../utils/spaceInvadersGame');
+        cleanupRuntime = initSpaceInvadersGame(container);
+        return;
+      } catch (error) {
+        console.error('Failed to load Space Invaders mode', error);
+        isSpaceInvadersEnabled = false;
+        configureOverlay(container, false);
+      }
     }
 
     initGlobeVisualization(container);

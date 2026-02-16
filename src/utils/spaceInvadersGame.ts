@@ -1,7 +1,11 @@
 import * as d3 from 'd3';
 import { clamp, createInvaderGrid, rectanglesOverlap } from './spaceInvaders';
 
+/**
+ * Represents a projectile fired by the player or invaders.
+ */
 interface Bullet {
+  id: number;
   x: number;
   y: number;
   width: number;
@@ -53,6 +57,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
   let invaderDirection = 1;
   let lastPlayerShot = 0;
   let lastInvaderShot = 0;
+  let nextBulletId = 0;
   let score = 0;
   let gameOverMessage = '';
   let gameAnimationFrameId: number | null = null;
@@ -88,6 +93,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
 
   function shootPlayerBullet() {
     bullets.push({
+      id: nextBulletId++,
       x: player.x + player.width / 2 - 2,
       y: player.y - 10,
       width: 4,
@@ -105,6 +111,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
 
     const shooter = aliveInvaders[Math.floor(Math.random() * aliveInvaders.length)];
     bullets.push({
+      id: nextBulletId++,
       x: shooter.x + shooter.width / 2 - 2,
       y: shooter.y + shooter.height,
       width: 6,
@@ -138,7 +145,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
 
     const bulletSelection = bulletLayer
       .selectAll('rect')
-      .data(bullets, (_bullet, index) => index);
+      .data(bullets, (bullet: any) => bullet.id);
 
     bulletSelection.exit().remove();
 
@@ -170,6 +177,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
 
   function animate(now: number) {
     if (gameOverMessage) {
+      disableInputListeners();
       updateGameStatus();
       render();
       return;
@@ -316,6 +324,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
 
     element.addEventListener('touchstart', start, { passive: false });
     element.addEventListener('touchend', end, { passive: false });
+    element.addEventListener('touchcancel', end, { passive: false });
     element.addEventListener('mousedown', start);
     element.addEventListener('mouseup', end);
     element.addEventListener('mouseleave', end);
@@ -323,6 +332,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
     return () => {
       element.removeEventListener('touchstart', start);
       element.removeEventListener('touchend', end);
+      element.removeEventListener('touchcancel', end);
       element.removeEventListener('mousedown', start);
       element.removeEventListener('mouseup', end);
       element.removeEventListener('mouseleave', end);
@@ -332,20 +342,34 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
   const releaseLeftControl = bindPointerControl(leftButton, 'moveLeft');
   const releaseRightControl = bindPointerControl(rightButton, 'moveRight');
   const releaseShootControl = bindPointerControl(shootButton, 'shoot');
+  let areInputListenersActive = false;
+
+  function disableInputListeners() {
+    if (!areInputListenersActive) {
+      return;
+    }
+
+    areInputListenersActive = false;
+    controlState.moveLeft = false;
+    controlState.moveRight = false;
+    controlState.shoot = false;
+    window.removeEventListener('keydown', keyDownListener);
+    window.removeEventListener('keyup', keyUpListener);
+    releaseLeftControl();
+    releaseRightControl();
+    releaseShootControl();
+  }
 
   window.addEventListener('keydown', keyDownListener);
   window.addEventListener('keyup', keyUpListener);
+  areInputListenersActive = true;
 
   updateGameStatus();
   render();
   gameAnimationFrameId = requestAnimationFrame(animate);
 
   return () => {
-    window.removeEventListener('keydown', keyDownListener);
-    window.removeEventListener('keyup', keyUpListener);
-    releaseLeftControl();
-    releaseRightControl();
-    releaseShootControl();
+    disableInputListeners();
 
     if (mobileControls) {
       mobileControls.hidden = true;
