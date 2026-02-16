@@ -8,6 +8,24 @@ describe('spaceInvaders utilities', () => {
 
       expect(result).toBe(10);
     });
+
+    it('should return the min when the value is below range', () => {
+      const result = clamp(-3, 0, 10);
+
+      expect(result).toBe(0);
+    });
+
+    it('should return the value when it is inside the range', () => {
+      const result = clamp(7, 0, 10);
+
+      expect(result).toBe(7);
+    });
+
+    it('should return the value when it matches the max', () => {
+      const result = clamp(10, 0, 10);
+
+      expect(result).toBe(10);
+    });
   });
 
   describe('rectanglesOverlap', () => {
@@ -18,6 +36,15 @@ describe('spaceInvaders utilities', () => {
       const result = rectanglesOverlap(first, second);
 
       expect(result).toBe(true);
+    });
+
+    it('should return false when rectangles do not intersect', () => {
+      const first = { x: 10, y: 10, width: 20, height: 20 };
+      const second = { x: 40, y: 40, width: 20, height: 20 };
+
+      const result = rectanglesOverlap(first, second);
+
+      expect(result).toBe(false);
     });
   });
 

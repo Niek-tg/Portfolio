@@ -600,7 +600,7 @@
       bullets.push({
         x: shooter.x + shooter.width / 2 - 2,
         y: shooter.y + shooter.height,
-        width: 4,
+        width: 6,
         height: 10,
         velocityY: 4.5,
         isPlayerBullet: false,
@@ -643,6 +643,7 @@
         .attr('y', (bullet) => bullet.y)
         .attr('width', (bullet) => bullet.width)
         .attr('height', (bullet) => bullet.height)
+        .attr('rx', (bullet) => bullet.isPlayerBullet ? 0 : 2)
         .attr('fill', (bullet) => bullet.isPlayerBullet ? '#86efac' : '#fca5a5');
 
       const playerSelection = playerLayer.selectAll('rect').data([player]);
@@ -767,7 +768,7 @@
         setControl('moveRight', true);
       }
 
-      if (event.key === ' ' || event.key === 'Spacebar') {
+      if (event.key === ' ') {
         event.preventDefault();
         setControl('shoot', true);
       }
@@ -782,7 +783,7 @@
         setControl('moveRight', false);
       }
 
-      if (event.key === ' ' || event.key === 'Spacebar') {
+      if (event.key === ' ') {
         setControl('shoot', false);
       }
     };
