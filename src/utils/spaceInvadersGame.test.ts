@@ -1,5 +1,25 @@
 import { describe, expect, it, vi } from 'vitest';
-import { initSpaceInvadersGame } from './spaceInvadersGame';
+import { calculateFrameScale, initSpaceInvadersGame } from './spaceInvadersGame';
+
+describe('calculateFrameScale', () => {
+  it('should use a 1x scale when there is no previous frame time', () => {
+    const frameScale = calculateFrameScale(null, 100);
+
+    expect(frameScale).toBe(1);
+  });
+
+  it('should clamp very fast frames to keep movement readable', () => {
+    const frameScale = calculateFrameScale(100, 108);
+
+    expect(frameScale).toBe(0.6);
+  });
+
+  it('should clamp very slow frames to avoid big movement jumps', () => {
+    const frameScale = calculateFrameScale(100, 160);
+
+    expect(frameScale).toBe(1.6);
+  });
+});
 
 describe('initSpaceInvadersGame', () => {
   it('should return a cleanup function', () => {
