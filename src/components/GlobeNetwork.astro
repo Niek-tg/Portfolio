@@ -4,12 +4,30 @@
 
 <div id="globe-network" class="globe-container">
   <div class="overlay-content">
-    <h1>Welcome to My Portfolio</h1>
-    <p class="tagline">Software Developer | Problem Solver | Tech Enthusiast</p>
-    <div class="cta-buttons">
-      <a href="/Portfolio/resume" class="btn btn-primary">View Resume</a>
-      <a href="/Portfolio/about" class="btn btn-secondary">Learn More</a>
+    <div id="space-invaders-prompt" class="terminal-prompt" aria-live="polite">
+      <p>$ Enable Space Invaders mode?</p>
+      <div class="terminal-actions">
+        <button id="enable-space-invaders" type="button" class="terminal-button">yes</button>
+        <button id="skip-space-invaders" type="button" class="terminal-button">no</button>
+      </div>
     </div>
+
+    <p id="game-status" class="game-status" hidden>Score: 0</p>
+
+    <div class="hero-content">
+      <h1>Welcome to My Portfolio</h1>
+      <p class="tagline">Software Developer | Problem Solver | Tech Enthusiast</p>
+      <div class="cta-buttons">
+        <a href="/Portfolio/resume" class="btn btn-primary">View Resume</a>
+        <a href="/Portfolio/about" class="btn btn-secondary">Learn More</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-game-controls" class="mobile-controls" hidden>
+    <button id="move-left" type="button" aria-label="Move left">◀</button>
+    <button id="shoot" type="button" aria-label="Shoot">●</button>
+    <button id="move-right" type="button" aria-label="Move right">▶</button>
   </div>
 </div>
 
@@ -29,10 +47,14 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
+    background:
       radial-gradient(circle at 20% 50%, rgba(91, 124, 230, 0.12) 0%, transparent 50%),
       radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.12) 0%, transparent 50%);
     pointer-events: none;
+  }
+
+  .globe-container.game-mode::before {
+    background: linear-gradient(180deg, rgba(10, 20, 40, 0.5) 0%, rgba(5, 10, 25, 0.8) 100%);
   }
 
   .overlay-content {
@@ -42,6 +64,68 @@
     transform: translate(-50%, -50%);
     text-align: center;
     z-index: 10;
+    width: min(90%, 740px);
+  }
+
+  .overlay-content.is-game-mode {
+    top: 1rem;
+    left: 1rem;
+    transform: none;
+    text-align: left;
+    width: auto;
+  }
+
+  .terminal-prompt {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.8);
+    color: #bbf7d0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    backdrop-filter: blur(3px);
+  }
+
+  .terminal-prompt p {
+    margin: 0;
+  }
+
+  .terminal-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .terminal-button {
+    border: 1px solid rgba(16, 185, 129, 0.6);
+    background: transparent;
+    color: #86efac;
+    border-radius: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  .terminal-button:hover {
+    background: rgba(16, 185, 129, 0.15);
+  }
+
+  .game-status {
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    color: #e2e8f0;
+    background: rgba(15, 23, 42, 0.7);
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.35rem;
+    display: inline-block;
+  }
+
+  .hero-content {
+    margin-top: 1rem;
   }
 
   .overlay-content h1 {
@@ -103,6 +187,33 @@
     transform: translateY(-2px);
   }
 
+  .mobile-controls {
+    position: absolute;
+    bottom: 0.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.75rem;
+    z-index: 12;
+  }
+
+  .mobile-controls button {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.8);
+    background: rgba(15, 23, 42, 0.85);
+    color: #e2e8f0;
+    font-size: 1rem;
+  }
+
+  .terminal-prompt[hidden],
+  .game-status[hidden],
+  .hero-content[hidden],
+  .mobile-controls[hidden] {
+    display: none !important;
+  }
+
   :global(#globe-network .particle) {
     fill-opacity: 0.7;
   }
@@ -130,6 +241,10 @@
     .overlay-content .tagline {
       font-size: 1.125rem;
     }
+
+    .hero-content {
+      margin-top: 0.75rem;
+    }
   }
 </style>
 
@@ -153,43 +268,93 @@
   }
 
   let animationFrameId: number | null = null;
+  let cleanupRuntime: (() => void) | null = null;
+  let hasAnsweredSpaceInvadersPrompt = false;
+  let isSpaceInvadersEnabled = false;
 
-  function initGlobeVisualization() {
-    const container = document.getElementById('globe-network');
-    if (!container) return;
-
-    // Cancel any existing animation loop
+  function clearRuntime() {
     if (animationFrameId !== null) {
       cancelAnimationFrame(animationFrameId);
       animationFrameId = null;
     }
 
-    // Clear any existing SVG
-    d3.select(container).selectAll('svg').remove();
+    if (cleanupRuntime) {
+      cleanupRuntime();
+      cleanupRuntime = null;
+    }
+  }
+
+  function configureOverlay(container: HTMLElement, gameEnabled: boolean) {
+    const overlayContent = container.querySelector('.overlay-content') as HTMLElement | null;
+    const heroContent = container.querySelector('.hero-content') as HTMLElement | null;
+    const promptElement = container.querySelector('#space-invaders-prompt') as HTMLElement | null;
+    const gameStatus = container.querySelector('#game-status') as HTMLElement | null;
+
+    if (!overlayContent || !heroContent || !promptElement || !gameStatus) {
+      return;
+    }
+
+    if (gameEnabled) {
+      container.classList.add('game-mode');
+      overlayContent.classList.add('is-game-mode');
+      heroContent.hidden = true;
+      promptElement.hidden = true;
+      gameStatus.hidden = false;
+      return;
+    }
+
+    container.classList.remove('game-mode');
+    overlayContent.classList.remove('is-game-mode');
+    heroContent.hidden = false;
+    promptElement.hidden = hasAnsweredSpaceInvadersPrompt;
+    gameStatus.hidden = true;
+  }
+
+  function setupPrompt(container: HTMLElement) {
+    const enableButton = document.getElementById('enable-space-invaders');
+    const skipButton = document.getElementById('skip-space-invaders');
+
+    if (!(enableButton instanceof HTMLButtonElement) || !(skipButton instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    if (enableButton.dataset.promptBound === 'true' && skipButton.dataset.promptBound === 'true') {
+      return;
+    }
+
+    enableButton.onclick = () => {
+      hasAnsweredSpaceInvadersPrompt = true;
+      isSpaceInvadersEnabled = true;
+      initVisualizationWithErrorHandling();
+    };
+
+    skipButton.onclick = () => {
+      hasAnsweredSpaceInvadersPrompt = true;
+      isSpaceInvadersEnabled = false;
+      configureOverlay(container, false);
+    };
+
+    enableButton.dataset.promptBound = 'true';
+    skipButton.dataset.promptBound = 'true';
+  }
+
+  function initGlobeVisualization(container: HTMLElement) {
+    configureOverlay(container, false);
 
     const width = container.clientWidth;
     const height = container.clientHeight;
-
-    // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Detect mobile device for performance optimizations
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    // Create SVG
     const svg = d3.select(container)
       .append('svg')
       .attr('width', width)
       .attr('height', height)
       .attr('style', 'position: absolute; top: 0; left: 0;');
 
-    // Create particles representing skills/technologies scattered across the "globe"
-    // Reduce particle count on mobile for better performance
     const numParticles = isMobile ? 35 : 80;
     const particles: Particle[] = [];
-    
-    // Skill categories for coloring - Modern color palette
     const categories = ['frontend', 'backend', 'tools', 'cloud'];
     const categoryColors: Record<string, string> = {
       frontend: '#5b7ce6',
@@ -198,16 +363,13 @@
       cloud: '#10b981'
     };
 
-    // Create particles with curved distribution (simulate sphere projection)
     for (let i = 0; i < numParticles; i++) {
       const angle = (i / numParticles) * Math.PI * 2;
       const centerX = width / 2;
       const centerY = height / 2;
-      
-      // Create a 3D-like distribution
-      const z = Math.random() * 2 - 1; // -1 to 1
+      const z = Math.random() * 2 - 1;
       const circleRadius = Math.sqrt(1 - z * z);
-      
+
       particles.push({
         id: i,
         x: centerX + Math.cos(angle) * circleRadius * width * 0.4,
@@ -219,18 +381,14 @@
       });
     }
 
-    // Calculate connections between nearby particles
     function calculateConnections(): Connection[] {
       const connections: Connection[] = [];
-      // Reduce max distance on mobile for fewer connections
       const maxDistance = isMobile ? 120 : 150;
-      // Limit connections per particle on mobile
       const maxConnectionsPerParticle = isMobile ? 3 : 5;
 
       for (let i = 0; i < particles.length; i++) {
         let connectionCount = 0;
         for (let j = i + 1; j < particles.length; j++) {
-          // Skip if source particle already has max connections
           if (connectionCount >= maxConnectionsPerParticle) break;
 
           const dx = particles[i].x - particles[j].x;
@@ -251,15 +409,12 @@
       return connections;
     }
 
-    // Initial connections
     let connections = calculateConnections();
-
-    // Create connection lines
     const connectionGroup = svg.append('g');
-    
+
     function updateConnections() {
       connections = calculateConnections();
-      
+
       const lines = connectionGroup
         .selectAll('line')
         .data(connections, (d: any) => `${d.source.id}-${d.target.id}`);
@@ -278,9 +433,8 @@
         .attr('stroke-opacity', (d: Connection) => Math.max(0, 1 - d.distance / 150));
     }
 
-    // Create particles
     const particleGroup = svg.append('g');
-    
+
     const particleElements = particleGroup
       .selectAll('circle')
       .data(particles)
@@ -291,48 +445,38 @@
       .attr('cx', (d: Particle) => d.x)
       .attr('cy', (d: Particle) => d.y)
       .attr('fill', (d: Particle) => categoryColors[d.category])
-      // Disable expensive drop-shadow filter on mobile for better performance
       .style('filter', isMobile ? 'none' : 'drop-shadow(0 0 3px rgba(255, 255, 255, 0.5))');
 
-    // Animation loop (only if motion is not reduced)
-    // Throttle animation frame rate on mobile devices
     let lastFrameTime = 0;
-    const targetFrameTime = isMobile ? 1000 / 30 : 1000 / 60; // 30fps on mobile, 60fps on desktop
+    const targetFrameTime = isMobile ? 1000 / 30 : 1000 / 60;
 
     function animate(currentTime: number = 0) {
       if (!prefersReducedMotion) {
         const elapsed = currentTime - lastFrameTime;
 
-        // Throttle frame rate for mobile performance
         if (elapsed >= targetFrameTime) {
           lastFrameTime = currentTime - (elapsed % targetFrameTime);
 
-          // Update particle positions with smooth floating motion
-          particles.forEach((p: Particle) => {
-            p.x += p.vx;
-            p.y += p.vy;
+          particles.forEach((particle: Particle) => {
+            particle.x += particle.vx;
+            particle.y += particle.vy;
 
-            // Bounce off edges with some padding
             const padding = 50;
-            if (p.x < padding || p.x > width - padding) p.vx *= -1;
-            if (p.y < padding || p.y > height - padding) p.vy *= -1;
+            if (particle.x < padding || particle.x > width - padding) particle.vx *= -1;
+            if (particle.y < padding || particle.y > height - padding) particle.vy *= -1;
 
-            // Add slight random drift
-            p.vx += (Math.random() - 0.5) * 0.02;
-            p.vy += (Math.random() - 0.5) * 0.02;
+            particle.vx += (Math.random() - 0.5) * 0.02;
+            particle.vy += (Math.random() - 0.5) * 0.02;
 
-            // Limit velocity
             const maxVel = 0.5;
-            p.vx = Math.max(-maxVel, Math.min(maxVel, p.vx));
-            p.vy = Math.max(-maxVel, Math.min(maxVel, p.vy));
+            particle.vx = Math.max(-maxVel, Math.min(maxVel, particle.vx));
+            particle.vy = Math.max(-maxVel, Math.min(maxVel, particle.vy));
           });
 
-          // Update visual positions
           particleElements
             .attr('cx', (d: Particle) => d.x)
             .attr('cy', (d: Particle) => d.y);
 
-          // Update connections less frequently on mobile (every 3rd frame)
           if (!isMobile || Math.floor(currentTime / targetFrameTime) % 3 === 0) {
             updateConnections();
           }
@@ -342,21 +486,16 @@
       animationFrameId = requestAnimationFrame(animate);
     }
 
-    // Initial render of connections
     updateConnections();
 
-    // Start animation (static frame if reduced motion)
     if (!prefersReducedMotion) {
       animate();
     }
 
-    // Add interaction - highlight connections on hover (disabled on touch devices for performance)
     if (!isTouchDevice) {
-      particleElements.on('mouseenter', function(_event: MouseEvent, d: Particle) {
+      particleElements.on('mouseenter', function(_event: MouseEvent, particle: Particle) {
         connectionGroup.selectAll('line')
-          .classed('active', (conn: any) => 
-            conn.source.id === d.id || conn.target.id === d.id
-          );
+          .classed('active', (conn: any) => conn.source.id === particle.id || conn.target.id === particle.id);
       });
 
       particleElements.on('mouseleave', function() {
@@ -365,17 +504,51 @@
     }
   }
 
-  // Initialize on page load
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGlobeVisualization);
-  } else {
-    initGlobeVisualization();
+  async function initVisualization() {
+    const container = document.getElementById('globe-network');
+    if (!container) {
+      return;
+    }
+
+    clearRuntime();
+    d3.select(container).selectAll('svg').remove();
+    setupPrompt(container);
+
+    if (isSpaceInvadersEnabled) {
+      configureOverlay(container, true);
+      try {
+        const { initSpaceInvadersGame } = await import('../utils/spaceInvadersGame');
+        cleanupRuntime = initSpaceInvadersGame(container);
+        return;
+      } catch (error) {
+        console.error('Failed to load Space Invaders mode', error);
+        isSpaceInvadersEnabled = false;
+        configureOverlay(container, false);
+      }
+    }
+
+    initGlobeVisualization(container);
   }
 
-  // Reinitialize on window resize
+  function initVisualizationWithErrorHandling() {
+    void initVisualization().catch((error) => {
+      console.error('Failed to initialize visualization', error);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initVisualizationWithErrorHandling();
+    });
+  } else {
+    initVisualizationWithErrorHandling();
+  }
+
   let resizeTimer: ReturnType<typeof setTimeout>;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(initGlobeVisualization, 250);
+    resizeTimer = setTimeout(() => {
+      initVisualizationWithErrorHandling();
+    }, 250);
   });
 </script>

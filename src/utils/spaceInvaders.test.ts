@@ -1,0 +1,97 @@
+import { describe, expect, it } from 'vitest';
+import { clamp, createInvaderGrid, rectanglesOverlap } from './spaceInvaders';
+
+describe('spaceInvaders utilities', () => {
+  describe('clamp', () => {
+    it('should keep a value within the min and max range', () => {
+      const result = clamp(14, 0, 10);
+
+      expect(result).toBe(10);
+    });
+
+    it('should return the min when the value is below range', () => {
+      const result = clamp(-3, 0, 10);
+
+      expect(result).toBe(0);
+    });
+
+    it('should return the value when it is inside the range', () => {
+      const result = clamp(7, 0, 10);
+
+      expect(result).toBe(7);
+    });
+
+    it('should return the value when it matches the max', () => {
+      const result = clamp(10, 0, 10);
+
+      expect(result).toBe(10);
+    });
+
+    it('should return the value when it matches the min', () => {
+      const result = clamp(0, 0, 10);
+
+      expect(result).toBe(0);
+    });
+  });
+
+  describe('rectanglesOverlap', () => {
+    it('should return true when rectangles intersect', () => {
+      const first = { x: 10, y: 10, width: 20, height: 20 };
+      const second = { x: 25, y: 20, width: 20, height: 20 };
+
+      const result = rectanglesOverlap(first, second);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when rectangles do not intersect', () => {
+      const first = { x: 10, y: 10, width: 20, height: 20 };
+      const second = { x: 40, y: 40, width: 20, height: 20 };
+
+      const result = rectanglesOverlap(first, second);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return false when rectangles only share an edge', () => {
+      const first = { x: 10, y: 10, width: 20, height: 20 };
+      const second = { x: 30, y: 10, width: 20, height: 20 };
+
+      const result = rectanglesOverlap(first, second);
+
+      expect(result).toBe(false);
+    });
+
+    it('should return true when one rectangle is fully inside the other', () => {
+      const outer = { x: 10, y: 10, width: 40, height: 40 };
+      const inner = { x: 20, y: 20, width: 10, height: 10 };
+
+      const result = rectanglesOverlap(outer, inner);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when rectangles only touch at one corner', () => {
+      const first = { x: 10, y: 10, width: 20, height: 20 };
+      const second = { x: 30, y: 30, width: 20, height: 20 };
+
+      const result = rectanglesOverlap(first, second);
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('createInvaderGrid', () => {
+    it('should create a centered 4x8 invader formation', () => {
+      const invaders = createInvaderGrid(800, 70);
+
+      expect(invaders).toHaveLength(32);
+    });
+
+    it('should position the first invader at the expected starting point', () => {
+      const invaders = createInvaderGrid(800, 70);
+
+      expect(invaders[0]).toMatchObject({ x: 239, y: 70 });
+    });
+  });
+});
