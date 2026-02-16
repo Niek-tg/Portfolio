@@ -39,7 +39,7 @@ jobs:
     
     steps:
       - name: Wait for tests to complete
-        uses: lewagon/wait-on-check-action@v1.3.4
+        uses: lewagon/wait-on-check-action@v1.5.0
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           check-name: 'test'
@@ -47,7 +47,7 @@ jobs:
           wait-interval: 10
       
       - name: Approve and enable auto-merge
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             // Approve the PR
