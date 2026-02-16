@@ -14,6 +14,16 @@ interface Bullet {
   isPlayerBullet: boolean;
 }
 
+const TARGET_FRAME_TIME = 1000 / 60;
+
+/**
+ * Convert elapsed animation time into a safe frame scale.
+ */
+export function calculateFrameScale(previousFrameTime: number | null, currentFrameTime: number): number {
+  const elapsed = previousFrameTime === null ? TARGET_FRAME_TIME : currentFrameTime - previousFrameTime;
+  return clamp(elapsed / TARGET_FRAME_TIME, 0.6, 1.6);
+}
+
 /**
  * Start the Space Invaders mini-game in the provided container.
  * Returns a cleanup function that removes listeners and stops animation.
@@ -61,6 +71,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
   let score = 0;
   let gameOverMessage = '';
   let gameAnimationFrameId: number | null = null;
+  let previousFrameTime: number | null = null;
 
   const stars = Array.from({ length: STAR_COUNT }, (_, index) => ({
     id: index,
@@ -77,7 +88,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
     .attr('cx', (star) => star.x)
     .attr('cy', (star) => star.y)
     .attr('r', (star) => star.r)
-    .attr('fill', 'rgba(226, 232, 240, 0.4)');
+    .attr('fill', 'rgba(163, 255, 171, 0.35)');
 
   const invaderLayer = svg.append('g');
   const bulletLayer = svg.append('g');
@@ -135,8 +146,8 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
       .append('rect')
       .attr('rx', 2)
       .attr('ry', 2)
-      .attr('fill', '#93c5fd')
-      .attr('stroke', '#1d4ed8')
+      .attr('fill', '#98f7a8')
+      .attr('stroke', '#335c3e')
       .merge(invaderSelection as any)
       .attr('x', (invader) => invader.x)
       .attr('y', (invader) => invader.y)
@@ -158,7 +169,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
       .attr('width', (bullet) => bullet.width)
       .attr('height', (bullet) => bullet.height)
       .attr('rx', (bullet) => bullet.isPlayerBullet ? 0 : 2)
-      .attr('fill', (bullet) => bullet.isPlayerBullet ? '#86efac' : '#fca5a5');
+      .attr('fill', (bullet) => bullet.isPlayerBullet ? '#f4ff7a' : '#ff9d4d');
 
     const playerSelection = playerLayer.selectAll('rect').data([player]);
     playerSelection
@@ -166,8 +177,8 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
       .append('rect')
       .attr('rx', 2)
       .attr('ry', 2)
-      .attr('fill', '#34d399')
-      .attr('stroke', '#065f46')
+      .attr('fill', '#bbf86f')
+      .attr('stroke', '#4b662d')
       .merge(playerSelection as any)
       .attr('x', player.x)
       .attr('y', player.y)
@@ -183,12 +194,15 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
       return;
     }
 
+    const frameScale = calculateFrameScale(previousFrameTime, now);
+    previousFrameTime = now;
+
     if (controlState.moveLeft) {
-      player.x -= player.speed;
+      player.x -= player.speed * frameScale;
     }
 
     if (controlState.moveRight) {
-      player.x += player.speed;
+      player.x += player.speed * frameScale;
     }
 
     player.x = clamp(player.x, 0, width - player.width);
@@ -199,7 +213,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
     }
 
     const aliveInvaders = invaders.filter((invader) => invader.isAlive);
-    const horizontalMove = 1.2 * invaderDirection;
+    const horizontalMove = 1.2 * invaderDirection * frameScale;
     let reachedEdge = false;
 
     aliveInvaders.forEach((invader) => {
@@ -222,7 +236,7 @@ export function initSpaceInvadersGame(container: HTMLElement): () => void {
     }
 
     bullets.forEach((bullet) => {
-      bullet.y += bullet.velocityY;
+      bullet.y += bullet.velocityY * frameScale;
     });
 
     for (let index = bullets.length - 1; index >= 0; index--) {

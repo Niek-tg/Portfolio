@@ -54,7 +54,9 @@
   }
 
   .globe-container.game-mode::before {
-    background: linear-gradient(180deg, rgba(10, 20, 40, 0.5) 0%, rgba(5, 10, 25, 0.8) 100%);
+    background:
+      radial-gradient(circle at 50% 40%, rgba(170, 255, 120, 0.08) 0%, rgba(170, 255, 120, 0) 50%),
+      linear-gradient(180deg, rgba(6, 21, 9, 0.65) 0%, rgba(3, 10, 5, 0.92) 100%);
   }
 
   .overlay-content {
@@ -81,10 +83,10 @@
     gap: 0.5rem;
     margin-bottom: 1rem;
     padding: 0.75rem 0.9rem;
-    border: 1px solid rgba(16, 185, 129, 0.45);
+    border: 1px solid rgba(187, 248, 111, 0.6);
     border-radius: 0.5rem;
-    background: rgba(15, 23, 42, 0.8);
-    color: #bbf7d0;
+    background: rgba(10, 28, 14, 0.86);
+    color: #d9ffb0;
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.85rem;
     backdrop-filter: blur(3px);
@@ -100,9 +102,9 @@
   }
 
   .terminal-button {
-    border: 1px solid rgba(16, 185, 129, 0.6);
+    border: 1px solid rgba(187, 248, 111, 0.75);
     background: transparent;
-    color: #86efac;
+    color: #d9ffb0;
     border-radius: 0.3rem;
     padding: 0.25rem 0.6rem;
     font-family: inherit;
@@ -111,14 +113,15 @@
   }
 
   .terminal-button:hover {
-    background: rgba(16, 185, 129, 0.15);
+    background: rgba(187, 248, 111, 0.2);
   }
 
   .game-status {
     margin: 0;
     font-family: 'Courier New', Courier, monospace;
-    color: #e2e8f0;
-    background: rgba(15, 23, 42, 0.7);
+    color: #e8ffc3;
+    background: rgba(10, 28, 14, 0.82);
+    border: 1px solid rgba(187, 248, 111, 0.4);
     padding: 0.35rem 0.5rem;
     border-radius: 0.35rem;
     display: inline-block;
@@ -201,9 +204,9 @@
     width: 3rem;
     height: 3rem;
     border-radius: 999px;
-    border: 1px solid rgba(148, 163, 184, 0.8);
-    background: rgba(15, 23, 42, 0.85);
-    color: #e2e8f0;
+    border: 1px solid rgba(187, 248, 111, 0.7);
+    background: rgba(10, 28, 14, 0.88);
+    color: #e8ffc3;
     font-size: 1rem;
   }
 
