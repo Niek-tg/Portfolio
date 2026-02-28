@@ -4,16 +4,6 @@
 
 <div id="globe-network" class="globe-container">
   <div class="overlay-content">
-    <div id="space-invaders-prompt" class="terminal-prompt" aria-live="polite">
-      <p>$ Enable Space Invaders mode?</p>
-      <div class="terminal-actions">
-        <button id="enable-space-invaders" type="button" class="terminal-button">yes</button>
-        <button id="skip-space-invaders" type="button" class="terminal-button">no</button>
-      </div>
-    </div>
-
-    <p id="game-status" class="game-status" hidden>Score: 0</p>
-
     <div class="hero-content">
       <h1>Welcome to My Portfolio</h1>
       <p class="tagline">Software Developer | Problem Solver | Tech Enthusiast</p>
@@ -22,12 +12,6 @@
         <a href="/Portfolio/about" class="btn btn-secondary">Learn More</a>
       </div>
     </div>
-  </div>
-
-  <div id="mobile-game-controls" class="mobile-controls" hidden>
-    <button id="move-left" type="button" aria-label="Move left">◀</button>
-    <button id="shoot" type="button" aria-label="Shoot">●</button>
-    <button id="move-right" type="button" aria-label="Move right">▶</button>
   </div>
 </div>
 
@@ -53,12 +37,6 @@
     pointer-events: none;
   }
 
-  .globe-container.game-mode::before {
-    background:
-      radial-gradient(circle at 50% 40%, rgba(170, 255, 120, 0.08) 0%, rgba(170, 255, 120, 0) 50%),
-      linear-gradient(180deg, rgba(6, 21, 9, 0.65) 0%, rgba(3, 10, 5, 0.92) 100%);
-  }
-
   .overlay-content {
     position: absolute;
     top: 50%;
@@ -67,64 +45,6 @@
     text-align: center;
     z-index: 10;
     width: min(90%, 740px);
-  }
-
-  .overlay-content.is-game-mode {
-    top: 1rem;
-    left: 1rem;
-    transform: none;
-    text-align: left;
-    width: auto;
-  }
-
-  .terminal-prompt {
-    display: inline-flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.75rem 0.9rem;
-    border: 1px solid rgba(187, 248, 111, 0.6);
-    border-radius: 0.5rem;
-    background: rgba(10, 28, 14, 0.86);
-    color: #d9ffb0;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.85rem;
-    backdrop-filter: blur(3px);
-  }
-
-  .terminal-prompt p {
-    margin: 0;
-  }
-
-  .terminal-actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .terminal-button {
-    border: 1px solid rgba(187, 248, 111, 0.75);
-    background: transparent;
-    color: #d9ffb0;
-    border-radius: 0.3rem;
-    padding: 0.25rem 0.6rem;
-    font-family: inherit;
-    font-size: 0.8rem;
-    cursor: pointer;
-  }
-
-  .terminal-button:hover {
-    background: rgba(187, 248, 111, 0.2);
-  }
-
-  .game-status {
-    margin: 0;
-    font-family: 'Courier New', Courier, monospace;
-    color: #e8ffc3;
-    background: rgba(10, 28, 14, 0.82);
-    border: 1px solid rgba(187, 248, 111, 0.4);
-    padding: 0.35rem 0.5rem;
-    border-radius: 0.35rem;
-    display: inline-block;
   }
 
   .hero-content {
@@ -190,33 +110,6 @@
     transform: translateY(-2px);
   }
 
-  .mobile-controls {
-    position: absolute;
-    bottom: 0.8rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 0.75rem;
-    z-index: 12;
-  }
-
-  .mobile-controls button {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 999px;
-    border: 1px solid rgba(187, 248, 111, 0.7);
-    background: rgba(10, 28, 14, 0.88);
-    color: #e8ffc3;
-    font-size: 1rem;
-  }
-
-  .terminal-prompt[hidden],
-  .game-status[hidden],
-  .hero-content[hidden],
-  .mobile-controls[hidden] {
-    display: none !important;
-  }
-
   :global(#globe-network .particle) {
     fill-opacity: 0.7;
   }
@@ -271,79 +164,15 @@
   }
 
   let animationFrameId: number | null = null;
-  let cleanupRuntime: (() => void) | null = null;
-  let hasAnsweredSpaceInvadersPrompt = false;
-  let isSpaceInvadersEnabled = false;
 
   function clearRuntime() {
     if (animationFrameId !== null) {
       cancelAnimationFrame(animationFrameId);
       animationFrameId = null;
     }
-
-    if (cleanupRuntime) {
-      cleanupRuntime();
-      cleanupRuntime = null;
-    }
-  }
-
-  function configureOverlay(container: HTMLElement, gameEnabled: boolean) {
-    const overlayContent = container.querySelector('.overlay-content') as HTMLElement | null;
-    const heroContent = container.querySelector('.hero-content') as HTMLElement | null;
-    const promptElement = container.querySelector('#space-invaders-prompt') as HTMLElement | null;
-    const gameStatus = container.querySelector('#game-status') as HTMLElement | null;
-
-    if (!overlayContent || !heroContent || !promptElement || !gameStatus) {
-      return;
-    }
-
-    if (gameEnabled) {
-      container.classList.add('game-mode');
-      overlayContent.classList.add('is-game-mode');
-      heroContent.hidden = true;
-      promptElement.hidden = true;
-      gameStatus.hidden = false;
-      return;
-    }
-
-    container.classList.remove('game-mode');
-    overlayContent.classList.remove('is-game-mode');
-    heroContent.hidden = false;
-    promptElement.hidden = hasAnsweredSpaceInvadersPrompt;
-    gameStatus.hidden = true;
-  }
-
-  function setupPrompt(container: HTMLElement) {
-    const enableButton = document.getElementById('enable-space-invaders');
-    const skipButton = document.getElementById('skip-space-invaders');
-
-    if (!(enableButton instanceof HTMLButtonElement) || !(skipButton instanceof HTMLButtonElement)) {
-      return;
-    }
-
-    if (enableButton.dataset.promptBound === 'true' && skipButton.dataset.promptBound === 'true') {
-      return;
-    }
-
-    enableButton.onclick = () => {
-      hasAnsweredSpaceInvadersPrompt = true;
-      isSpaceInvadersEnabled = true;
-      initVisualizationWithErrorHandling();
-    };
-
-    skipButton.onclick = () => {
-      hasAnsweredSpaceInvadersPrompt = true;
-      isSpaceInvadersEnabled = false;
-      configureOverlay(container, false);
-    };
-
-    enableButton.dataset.promptBound = 'true';
-    skipButton.dataset.promptBound = 'true';
   }
 
   function initGlobeVisualization(container: HTMLElement) {
-    configureOverlay(container, false);
-
     const width = container.clientWidth;
     const height = container.clientHeight;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -507,7 +336,7 @@
     }
   }
 
-  async function initVisualization() {
+  function initVisualization() {
     const container = document.getElementById('globe-network');
     if (!container) {
       return;
@@ -515,28 +344,15 @@
 
     clearRuntime();
     d3.select(container).selectAll('svg').remove();
-    setupPrompt(container);
-
-    if (isSpaceInvadersEnabled) {
-      configureOverlay(container, true);
-      try {
-        const { initSpaceInvadersGame } = await import('../utils/spaceInvadersGame');
-        cleanupRuntime = initSpaceInvadersGame(container);
-        return;
-      } catch (error) {
-        console.error('Failed to load Space Invaders mode', error);
-        isSpaceInvadersEnabled = false;
-        configureOverlay(container, false);
-      }
-    }
-
     initGlobeVisualization(container);
   }
 
   function initVisualizationWithErrorHandling() {
-    void initVisualization().catch((error) => {
+    try {
+      initVisualization();
+    } catch (error) {
       console.error('Failed to initialize visualization', error);
-    });
+    }
   }
 
   if (document.readyState === 'loading') {
